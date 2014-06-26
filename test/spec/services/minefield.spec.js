@@ -107,4 +107,13 @@ describe('Service: MinefieldGenerator', function () {
     expect(minefield.game[44].revealed).toBe(true);
     expect(minefield.state).toBe(gameState.LOST);
   }));
+
+  it('should keep revealing if you reveal an empty cell', function () {
+    randomArr = [44];
+    var minefield = new Minefield(10, 10, 1);
+    minefield.reveal(0);
+    minefield.game.forEach(function (cell, index) {
+      expect(cell.revealed).toBe(index !== 44);
+    });
+  });
 });
