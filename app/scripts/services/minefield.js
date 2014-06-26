@@ -58,7 +58,7 @@ angular.module('minesweeperAppInternal')
       }
 
       this.reveal = function (index) {
-        if (!mineField[index].revealed) {
+        if (!mineField[index].revealed && !mineField[index].flagged) {
           mineField[index].revealed = true;
           if (mineField[index].mine) {
             this.state = gameState.LOST;
