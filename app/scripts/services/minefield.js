@@ -10,16 +10,39 @@ angular.module('minesweeperAppInternal')
     PLAYING: 'playing'
   })
   .factory('Minefield', function Minefield(random, gameState) {
-    function incrementCount(cell) {
-      if (cell) {
-        cell.count++;
-      }
-    }
-
     return function (width, height, mines) {
       var mineField = [];
+
+      function incrementCount(cell) {
+        cell.count++;
+      }
+
+      function getNeighbors(position) {
+        var neighbors = [];
+
+        if (position % width !== 0) {
+          neighbors.push(mineField[position - 1]);
+          neighbors.push(mineField[position - width - 1]);
+          neighbors.push(mineField[position + width - 1]);
+        }
+        if (position % width !== width - 1) {
+          neighbors.push(mineField[position + 1]);
+          neighbors.push(mineField[position - width + 1]);
+          neighbors.push(mineField[position + width + 1]);
+        }
+        neighbors.push(mineField[position - width]);
+        neighbors.push(mineField[position + width]);
+
+        return neighbors.filter(angular.identity);
+      }
+
       for (var i = 0; i < width * height; i++) {
-        mineField.push({mine: false, count: 0});
+        mineField.push({
+          id: i,
+          count: 0,
+          mine: false,
+          revealed: false
+        });
       }
 
       for (i = 0; i < mines; i++) {
@@ -28,25 +51,20 @@ angular.module('minesweeperAppInternal')
           i--;
         } else {
           mineField[position].mine = true;
-          if (position % width !== 0) {
-            incrementCount(mineField[position - 1]);
-            incrementCount(mineField[position - width - 1]);
-            incrementCount(mineField[position + width - 1]);
-          }
-          if (position % width !== width - 1) {
-            incrementCount(mineField[position + 1]);
-            incrementCount(mineField[position - width + 1]);
-            incrementCount(mineField[position + width + 1]);
-          }
-          incrementCount(mineField[position - width]);
-          incrementCount(mineField[position + width]);
+          getNeighbors(position).forEach(incrementCount);
         }
       }
 
       this.reveal = function (index) {
-        mineField[index].revealed = true;
-        if (mineField[index].mine) {
-          this.state = gameState.LOST;
+        if (!mineField[index].revealed) {
+          mineField[index].revealed = true;
+          if (mineField[index].mine) {
+            this.state = gameState.LOST;
+          } else if (mineField[index].count === 0) {
+            getNeighbors(index).forEach(function (cell) {
+              this.reveal(cell.id);
+            }, this);
+          }
         }
       };
 
