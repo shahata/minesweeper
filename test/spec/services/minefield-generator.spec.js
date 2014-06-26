@@ -49,9 +49,24 @@ describe('Service: MinefieldGenerator', function () {
     field[4].count = field[5].count = field[6].count = 1;
     field[14].count = field[16].count = 1;
     field[24].count = field[25].count = field[26].count = 1;
-
     randomArr = [15];
-    expect(MinefieldGenerator.create(10, 10, 1)).toEqual(field);
+
+    MinefieldGenerator.create(10, 10, 1).forEach(function (value, index) {
+      expect(value.mine).toEqual(field[index].mine);
+      expect(value.count).toEqual(field[index].count);
+    });
+  });
+
+  it('should not touch overflowing cells', function () {
+    var field = mineField([10, 19]);
+    field[0].count = field[1].count = field[11].count = field[20].count = field[21].count = 1;
+    field[8].count = field[9].count = field[18].count = field[28].count = field[29].count = 1;
+    randomArr = [10, 19];
+
+    MinefieldGenerator.create(10, 10, 2).forEach(function (value, index) {
+      expect(value.mine).toEqual(field[index].mine);
+      expect(value.count).toEqual(field[index].count);
+    });
   });
 
 });
