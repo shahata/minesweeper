@@ -18,14 +18,18 @@ angular.module('minesweeperAppInternal')
         } else {
           try {
             mineField[position].mine = true;
-            mineField[position - 1].count++;
-            mineField[position + 1].count++;
-            mineField[position - width - 1].count++;
+            if (position % width !== 0) {
+              mineField[position - 1].count++;
+              mineField[position - width - 1].count++;
+              mineField[position + width - 1].count++;
+            }
+            if (position % width !== width - 1) {
+              mineField[position + 1].count++;
+              mineField[position - width + 1].count++;
+              mineField[position + width + 1].count++;
+            }
             mineField[position - width].count++;
-            mineField[position - width + 1].count++;
-            mineField[position + width - 1].count++;
             mineField[position + width].count++;
-            mineField[position + width + 1].count++;
           } catch (e) {
 
           }
