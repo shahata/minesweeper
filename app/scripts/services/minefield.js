@@ -69,9 +69,7 @@ angular.module('minesweeperAppInternal')
         }
       }
 
-      this.reveal = function (position) {
-        var row = Math.floor(position / height);
-        var col = position - (row * height);
+      this.reveal = function (row, col) {
         if (!mineField[row][col].revealed && !mineField[row][col].flagged) {
           mineField[row][col].revealed = true;
           if (mineField[row][col].mine) {
@@ -82,22 +80,18 @@ angular.module('minesweeperAppInternal')
               this.state = gameState.WON;
             } else if (mineField[row][col].count === 0) {
               getNeighbors(row, col).forEach(function (cell) {
-                this.reveal(cell.row * width + cell.column);
+                this.reveal(cell.row, cell.column);
               }, this);
             }
           }
         }
       };
 
-      this.flag = function (position) {
-        var row = Math.floor(position / height);
-        var col = position - (row * height);
+      this.flag = function (row, col) {
         mineField[row][col].flagged = !mineField[row][col].flagged;
       };
 
-      this.game = mineField.reduce(function (prev, value) {
-        return prev.concat(value);
-      }, []);
+      this.game = mineField;
       this.state = gameState.PLAYING;
     };
   });
