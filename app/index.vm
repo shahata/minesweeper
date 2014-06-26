@@ -29,7 +29,7 @@
   <body>
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-include="'views/main.html'"></div>
+    <div class="container" ng-include="'views/minesweeper.html'"></div>
 
 
     <script src="bower_components/jquery/jquery.js"></script>
