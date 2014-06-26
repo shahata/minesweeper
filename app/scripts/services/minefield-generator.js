@@ -5,6 +5,12 @@ angular.module('minesweeperAppInternal')
     return Math.round(Math.random() * max);
   })
   .service('MinefieldGenerator', function MinefieldGenerator(random) {
+    function incrementCount(cell) {
+      if (cell) {
+        cell.count++;
+      }
+    }
+
     this.create = function (width, height, mines) {
       var mineField = [];
       for (var i = 0; i < width * height; i++) {
@@ -16,23 +22,19 @@ angular.module('minesweeperAppInternal')
         if (mineField[position].mine) {
           i--;
         } else {
-          try {
-            mineField[position].mine = true;
-            if (position % width !== 0) {
-              mineField[position - 1].count++;
-              mineField[position - width - 1].count++;
-              mineField[position + width - 1].count++;
-            }
-            if (position % width !== width - 1) {
-              mineField[position + 1].count++;
-              mineField[position - width + 1].count++;
-              mineField[position + width + 1].count++;
-            }
-            mineField[position - width].count++;
-            mineField[position + width].count++;
-          } catch (e) {
-
+          mineField[position].mine = true;
+          if (position % width !== 0) {
+            incrementCount(mineField[position - 1]);
+            incrementCount(mineField[position - width - 1]);
+            incrementCount(mineField[position + width - 1]);
           }
+          if (position % width !== width - 1) {
+            incrementCount(mineField[position + 1]);
+            incrementCount(mineField[position - width + 1]);
+            incrementCount(mineField[position + width + 1]);
+          }
+          incrementCount(mineField[position - width]);
+          incrementCount(mineField[position + width]);
         }
       }
 
