@@ -42,7 +42,8 @@ angular.module('minesweeperAppInternal')
           id: i,
           count: 0,
           mine: false,
-          revealed: false
+          revealed: false,
+          flagged: false
         });
       }
 
@@ -72,6 +73,10 @@ angular.module('minesweeperAppInternal')
             }
           }
         }
+      };
+
+      this.flag = function (index) {
+        mineField[index].flagged = true;
       };
 
       this.game = mineField;
