@@ -136,4 +136,11 @@ describe('Service: MinefieldGenerator', function () {
     minefield.flag(44);
     expect(minefield.game[44].flagged).toBe(true);
   });
+
+  it('should unflag the cell', function () {
+    var minefield = new Minefield(10, 10, 0);
+    minefield.flag(44);
+    minefield.flag(44);
+    expect(minefield.game[44].flagged).toBe(false);
+  });
 });
