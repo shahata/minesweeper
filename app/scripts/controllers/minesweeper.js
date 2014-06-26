@@ -11,4 +11,8 @@ angular.module('minesweeperAppInternal')
         $window.alert('You Won!');
       }
     });
+
+    $scope.reveal = function (row, column) {
+      $scope.minefield.reveal((row * 10) + column);
+    };
   });
