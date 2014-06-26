@@ -43,7 +43,7 @@ describe('minesweeperApp', function () {
     expect(table.getCell(3, 0).getText()).toBe('1');
     expect(table.getCell(3, 1).getText()).toBe('2');
     expect(table.getCell(3, 2).getText()).toBe('3');
-    expect(table.getCell(2, 3).getText()).toBe('0');
+    expect(table.getCell(2, 3).getText()).toBe('');
   });
 
 });

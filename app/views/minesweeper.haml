@@ -1,3 +1,4 @@
 %table#minesweeper{:"ng-controller" => "MinesweeperCtrl"}
   %tr{:"ng-repeat" => "row in minefield.game"}
     %td{:"ng-repeat" => "cell in row"}
+      %div {{cell.mine ? '*' : cell.count ? cell.count : ''}}
