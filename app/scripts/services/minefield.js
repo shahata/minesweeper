@@ -4,7 +4,12 @@ angular.module('minesweeperAppInternal')
   .value('random', function (max) {
     return Math.round(Math.random() * max);
   })
-  .factory('Minefield', function Minefield(random) {
+  .constant('gameState', {
+    LOST: 'lost',
+    WON: 'won',
+    PLAYING: 'playing'
+  })
+  .factory('Minefield', function Minefield(random, gameState) {
     function incrementCount(cell) {
       if (cell) {
         cell.count++;
@@ -40,8 +45,12 @@ angular.module('minesweeperAppInternal')
 
       this.reveal = function (index) {
         mineField[index].revealed = true;
+        if (mineField[index].mine) {
+          this.state = gameState.LOST;
+        }
       };
 
       this.game = mineField;
+      this.state = gameState.PLAYING;
     };
   });
