@@ -12,7 +12,8 @@ describe('minesweeperApp', function () {
 
   it('should load successfully', function () {
     browser.get('/');
-    expect(element(by.css('h3')).getText()).toEqual('Enjoy coding! - Yeoman');
+    expect(element.all(by.css('#minesweeper tr')).count()).toEqual(10);
+    expect(element.all(by.css('#minesweeper td')).count()).toEqual(100);
   });
 
 });
