@@ -84,12 +84,19 @@ describe('Service: MinefieldGenerator', function () {
   it('should have 8 mines around the single none mine', function () {
     randomArr = [];
     for (var i = 0; i < 100; i++) {
-      if (i !== 45) {
+      if (i !== 44) {
         randomArr.push(i);
       }
     }
 
     var game = new Minefield(10, 10, 99).game;
-    expect(game[45].count).toBe(8);
+    expect(game[44].count).toBe(8);
+  });
+
+  it('should reveal the mine', function () {
+    randomArr = [44];
+    var minefield = new Minefield(10, 10, 1);
+    minefield.reveal(43);
+    expect(minefield.game[43].revealed).toBe(true);
   });
 });
