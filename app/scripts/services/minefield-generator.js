@@ -8,7 +8,7 @@ angular.module('minesweeperAppInternal')
     this.create = function (width, height, mines) {
       var mineField = [];
       for (var i = 0; i < width * height; i++) {
-        mineField.push({mine: false});
+        mineField.push({mine: false, count: 0});
       }
 
       for (i = 0; i < mines; i++) {
@@ -16,7 +16,19 @@ angular.module('minesweeperAppInternal')
         if (mineField[position].mine) {
           i--;
         } else {
-          mineField[position].mine = true;
+          try {
+            mineField[position].mine = true;
+            mineField[position - 1].count++;
+            mineField[position + 1].count++;
+            mineField[position - width - 1].count++;
+            mineField[position - width].count++;
+            mineField[position - width + 1].count++;
+            mineField[position + width - 1].count++;
+            mineField[position + width].count++;
+            mineField[position + width + 1].count++;
+          } catch (e) {
+
+          }
         }
       }
 
