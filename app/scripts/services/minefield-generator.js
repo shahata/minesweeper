@@ -4,14 +4,14 @@ angular.module('minesweeperAppInternal')
   .value('random', function (max) {
     return Math.round(Math.random() * max);
   })
-  .service('MinefieldGenerator', function MinefieldGenerator(random) {
+  .factory('Minefield', function Minefield(random) {
     function incrementCount(cell) {
       if (cell) {
         cell.count++;
       }
     }
 
-    this.create = function (width, height, mines) {
+    return function (width, height, mines) {
       var mineField = [];
       for (var i = 0; i < width * height; i++) {
         mineField.push({mine: false, count: 0});
@@ -38,6 +38,6 @@ angular.module('minesweeperAppInternal')
         }
       }
 
-      return mineField;
+      this.game = mineField;
     };
   });

@@ -1,7 +1,7 @@
 'use strict';
 
 describe('Service: MinefieldGenerator', function () {
-  var MinefieldGenerator, randomArr;
+  var Minefield, randomArr;
 
   beforeEach(function () {
     var randomIndex = 0;
@@ -11,73 +11,85 @@ describe('Service: MinefieldGenerator', function () {
     }});
   });
 
-  beforeEach(inject(function (_MinefieldGenerator_) {
-    MinefieldGenerator = _MinefieldGenerator_;
+  beforeEach(inject(function (_Minefield_) {
+    Minefield = _Minefield_;
   }));
 
   function mineField(arr) {
-    var field = [];
+    var game = [];
     for (var i = 0; i < 100; i++) {
-      field.push({
+      game.push({
         mine: arr.indexOf(i) !== -1 ? true : false,
         count: 0
       });
     }
-    return field;
+    return game;
   }
 
-  it('should generate a field with given parameters', function () {
-    var field = mineField([0, 1, 2, 3, 4, 5, 6, 7]);
-    randomArr = [0, 1, 2, 3, 4, 5, 6, 7];
+  it('should generate of correct length', function () {
+    expect(new Minefield(20, 15, 0).game.length).toBe(300);
+  });
 
-    MinefieldGenerator.create(10, 10, 8).forEach(function (value, index) {
-      expect(value.mine).toEqual(field[index].mine);
+  it('should generate a field with given parameters', function () {
+    var game = mineField(randomArr = [0, 1, 2, 3, 4, 5, 6, 7]);
+
+    new Minefield(10, 10, 8).game.forEach(function (value, index) {
+      expect(value.mine).toEqual(game[index].mine);
     });
   });
 
   it('should try to randomly select again if mine already exist', function () {
-    var field = mineField([0, 1, 2, 3, 4, 5, 6, 7]);
+    var game = mineField([0, 1, 2, 3, 4, 5, 6, 7]);
     randomArr = [0, 1, 2, 3, 3, 4, 5, 6, 7];
 
-    MinefieldGenerator.create(10, 10, 8).forEach(function (value, index) {
-      expect(value.mine).toEqual(field[index].mine);
+    new Minefield(10, 10, 8).game.forEach(function (value, index) {
+      expect(value.mine).toEqual(game[index].mine);
     });
   });
 
   it('should count for each cell how many mines it has around it', function () {
-    var field = mineField([15]);
-    field[4].count = field[5].count = field[6].count = 1;
-    field[14].count = field[16].count = 1;
-    field[24].count = field[25].count = field[26].count = 1;
-    randomArr = [15];
+    var game = mineField(randomArr = [15]);
+    game[4].count = game[5].count = game[6].count = 1;
+    game[14].count = game[16].count = 1;
+    game[24].count = game[25].count = game[26].count = 1;
 
-    MinefieldGenerator.create(10, 10, 1).forEach(function (value, index) {
-      expect(value.mine).toEqual(field[index].mine);
-      expect(value.count).toEqual(field[index].count);
+    new Minefield(10, 10, 1).game.forEach(function (value, index) {
+      expect(value.mine).toEqual(game[index].mine);
+      expect(value.count).toEqual(game[index].count);
     });
   });
 
   it('should not touch overflowing cells', function () {
-    var field = mineField([10, 19]);
-    field[0].count = field[1].count = field[11].count = field[20].count = field[21].count = 1;
-    field[8].count = field[9].count = field[18].count = field[28].count = field[29].count = 1;
-    randomArr = [10, 19];
+    var game = mineField(randomArr = [10, 19]);
+    game[0].count = game[1].count = game[11].count = game[20].count = game[21].count = 1;
+    game[8].count = game[9].count = game[18].count = game[28].count = game[29].count = 1;
 
-    MinefieldGenerator.create(10, 10, 2).forEach(function (value, index) {
-      expect(value.mine).toEqual(field[index].mine);
-      expect(value.count).toEqual(field[index].count);
+    new Minefield(10, 10, 2).game.forEach(function (value, index) {
+      expect(value.mine).toEqual(game[index].mine);
+      expect(value.count).toEqual(game[index].count);
     });
   });
 
   it('should not touch cells that are out of boundaries', function () {
-    var field = mineField([0, 99]);
-    field[1].count = field[10].count = field[11].count = 1;
-    field[98].count = field[88].count = field[89].count = 1;
-    randomArr = [0, 99];
+    var game = mineField(randomArr = [0, 99]);
+    game[1].count = game[10].count = game[11].count = 1;
+    game[98].count = game[88].count = game[89].count = 1;
 
-    MinefieldGenerator.create(10, 10, 2).forEach(function (value, index) {
-      expect(value.mine).toEqual(field[index].mine);
-      expect(value.count).toEqual(field[index].count);
+    new Minefield(10, 10, 2).game.forEach(function (value, index) {
+      expect(value.mine).toEqual(game[index].mine);
+      expect(value.count).toEqual(game[index].count);
     });
+  });
+
+  it('should have 8 mines around the single none mine', function () {
+    randomArr = [];
+    for (var i = 0; i < 100; i++) {
+      if (i !== 45) {
+        randomArr.push(i);
+      }
+    }
+
+    var game = new Minefield(10, 10, 99).game;
+    expect(game[45].count).toBe(8);
   });
 });
