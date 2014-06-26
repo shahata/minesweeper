@@ -13,6 +13,10 @@ describe('minesweeperApp', function () {
       return rows.get(row).all(by.css('td')).get(col);
     };
 
+    this.getValue = function (row, col) {
+      return this.getCell(row, col).element(by.css('.cell-value'));
+    };
+
   };
 
   beforeEach(function () {
@@ -36,10 +40,21 @@ describe('minesweeperApp', function () {
     expect(element.all(by.css('#minesweeper td')).count()).toEqual(100);
   });
 
+  it('should reveal cell on click', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    expect(table.getValue(0, 0).isDisplayed()).toBe(false);
+    table.getCell(0, 0).click();
+    expect(table.getValue(0, 0).isDisplayed()).toBe(true);
+  });
+
   it('should display correct values in cells', function () {
     var table = new MinesweeperTable();
     table.load();
-    expect(table.getCell(4, 1).getText()).toBe('*');
+    table.getCell(3, 0).click();
+    table.getCell(3, 1).click();
+    table.getCell(3, 2).click();
+    table.getCell(2, 3).click();
     expect(table.getCell(3, 0).getText()).toBe('1');
     expect(table.getCell(3, 1).getText()).toBe('2');
     expect(table.getCell(3, 2).getText()).toBe('3');
