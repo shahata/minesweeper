@@ -38,6 +38,10 @@ angular.module('minesweeperAppInternal')
         }
       }
 
+      this.reveal = function (index) {
+        mineField[index].revealed = true;
+      };
+
       this.game = mineField;
     };
   });
