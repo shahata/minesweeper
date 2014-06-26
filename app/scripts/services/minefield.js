@@ -76,7 +76,7 @@ angular.module('minesweeperAppInternal')
       };
 
       this.flag = function (index) {
-        mineField[index].flagged = true;
+        mineField[index].flagged = !mineField[index].flagged;
       };
 
       this.game = mineField;
