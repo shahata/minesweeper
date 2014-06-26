@@ -116,4 +116,18 @@ describe('Service: MinefieldGenerator', function () {
       expect(cell.revealed).toBe(index !== 44);
     });
   });
+
+  it('should win if only mines are still not revealed', inject(function (gameState) {
+    randomArr = [33, 34, 35, 43, 45, 53, 54, 55];
+    var mineField = new Minefield(10, 10, 8);
+
+    mineField.game.forEach(function (cell, index) {
+      if (randomArr.indexOf(index) === -1 && index !== 44) {
+        mineField.reveal(index);
+      }
+      expect(mineField.state).toBe(gameState.PLAYING);
+    });
+    mineField.reveal(44);
+    expect(mineField.state).toBe(gameState.WON);
+  }));
 });
