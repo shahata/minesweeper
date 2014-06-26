@@ -12,6 +12,7 @@ angular.module('minesweeperAppInternal')
   .factory('Minefield', function Minefield(random, gameState) {
     return function (width, height, mines) {
       var mineField = [];
+      var reminingCells = (width * height) - mines;
 
       function incrementCount(cell) {
         cell.count++;
@@ -60,10 +61,15 @@ angular.module('minesweeperAppInternal')
           mineField[index].revealed = true;
           if (mineField[index].mine) {
             this.state = gameState.LOST;
-          } else if (mineField[index].count === 0) {
-            getNeighbors(index).forEach(function (cell) {
-              this.reveal(cell.id);
-            }, this);
+          } else {
+            reminingCells--;
+            if (reminingCells === 0) {
+              this.state = gameState.WON;
+            } else if (mineField[index].count === 0) {
+              getNeighbors(index).forEach(function (cell) {
+                this.reveal(cell.id);
+              }, this);
+            }
           }
         }
       };
