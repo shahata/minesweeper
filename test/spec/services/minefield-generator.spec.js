@@ -69,4 +69,15 @@ describe('Service: MinefieldGenerator', function () {
     });
   });
 
+  it('should not touch cells that are out of boundaries', function () {
+    var field = mineField([0, 99]);
+    field[1].count = field[10].count = field[11].count = 1;
+    field[98].count = field[88].count = field[89].count = 1;
+    randomArr = [0, 99];
+
+    MinefieldGenerator.create(10, 10, 2).forEach(function (value, index) {
+      expect(value.mine).toEqual(field[index].mine);
+      expect(value.count).toEqual(field[index].count);
+    });
+  });
 });
