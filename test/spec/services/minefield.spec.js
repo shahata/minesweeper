@@ -130,4 +130,10 @@ describe('Service: MinefieldGenerator', function () {
     mineField.reveal(44);
     expect(mineField.state).toBe(gameState.WON);
   }));
+
+  it('should flag the cell', function () {
+    var minefield = new Minefield(10, 10, 0);
+    minefield.flag(44);
+    expect(minefield.game[44].flagged).toBe(true);
+  });
 });
