@@ -36,4 +36,11 @@ describe('Controller: MinesweeperCtrl', function () {
     });
     expect($window.alert).toHaveBeenCalledWith('You Lost!');
   }));
+
+  it('should alert that you lost', inject(function (gameState, $window) {
+    scope.$apply(function () {
+      scope.minefield.state = gameState.WON;
+    });
+    expect($window.alert).toHaveBeenCalledWith('You Won!');
+  }));
 });
