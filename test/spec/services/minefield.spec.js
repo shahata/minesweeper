@@ -93,10 +93,18 @@ describe('Service: MinefieldGenerator', function () {
     expect(game[44].count).toBe(8);
   });
 
-  it('should reveal the mine', function () {
+  it('should reveal the cell', function () {
     randomArr = [44];
     var minefield = new Minefield(10, 10, 1);
     minefield.reveal(43);
     expect(minefield.game[43].revealed).toBe(true);
   });
+
+  it('should lose if you reveal a mine', inject(function (gameState) {
+    randomArr = [44];
+    var minefield = new Minefield(10, 10, 1);
+    minefield.reveal(44);
+    expect(minefield.game[44].revealed).toBe(true);
+    expect(minefield.state).toBe(gameState.LOST);
+  }));
 });
