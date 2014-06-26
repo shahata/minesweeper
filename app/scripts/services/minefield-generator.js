@@ -12,7 +12,12 @@ angular.module('minesweeperAppInternal')
       }
 
       for (i = 0; i < mines; i++) {
-        mineField[random(width * height)].mine = true;
+        var position = random(width * height);
+        if (mineField[position].mine) {
+          i--;
+        } else {
+          mineField[position].mine = true;
+        }
       }
 
       return mineField;
