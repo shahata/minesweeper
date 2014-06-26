@@ -18,68 +18,86 @@ angular.module('minesweeperAppInternal')
         cell.count++;
       }
 
-      function getNeighbors(position) {
+      function getNeighbors(row, col) {
         var neighbors = [];
 
-        if (position % width !== 0) {
-          neighbors.push(mineField[position - 1]);
-          neighbors.push(mineField[position - width - 1]);
-          neighbors.push(mineField[position + width - 1]);
+        function safePush(row, col) {
+          if (mineField[row] && mineField[row][col]) {
+            neighbors.push(mineField[row][col]);
+          }
         }
-        if (position % width !== width - 1) {
-          neighbors.push(mineField[position + 1]);
-          neighbors.push(mineField[position - width + 1]);
-          neighbors.push(mineField[position + width + 1]);
-        }
-        neighbors.push(mineField[position - width]);
-        neighbors.push(mineField[position + width]);
 
-        return neighbors.filter(angular.identity);
+        if (col !== 0) {
+          safePush(row, col - 1);
+          safePush(row - 1, col - 1);
+          safePush(row + 1, col - 1);
+        }
+        if (col !== width - 1) {
+          safePush(row, col + 1);
+          safePush(row - 1, col + 1);
+          safePush(row + 1, col + 1);
+        }
+        safePush(row - 1, col);
+        safePush(row + 1, col);
+
+        return neighbors;
       }
 
-      for (var i = 0; i < width * height; i++) {
-        mineField.push({
-          id: i,
-          count: 0,
-          mine: false,
-          revealed: false,
-          flagged: false
-        });
+      for (var i = 0; i < height; i++) {
+        mineField.push([]);
+        for (var j = 0; j < width; j++) {
+          mineField[i].push({
+            row: i,
+            column: j,
+            count: 0,
+            mine: false,
+            revealed: false,
+            flagged: false
+          });
+        }
       }
 
       for (i = 0; i < mines; i++) {
         var position = random(width * height);
-        if (mineField[position].mine) {
+        var row = Math.floor(position / height);
+        var col = position - (row * height);
+        if (mineField[row][col].mine) {
           i--;
         } else {
-          mineField[position].mine = true;
-          getNeighbors(position).forEach(incrementCount);
+          mineField[row][col].mine = true;
+          getNeighbors(row, col).forEach(incrementCount);
         }
       }
 
-      this.reveal = function (index) {
-        if (!mineField[index].revealed && !mineField[index].flagged) {
-          mineField[index].revealed = true;
-          if (mineField[index].mine) {
+      this.reveal = function (position) {
+        var row = Math.floor(position / height);
+        var col = position - (row * height);
+        if (!mineField[row][col].revealed && !mineField[row][col].flagged) {
+          mineField[row][col].revealed = true;
+          if (mineField[row][col].mine) {
             this.state = gameState.LOST;
           } else {
             reminingCells--;
             if (reminingCells === 0) {
               this.state = gameState.WON;
-            } else if (mineField[index].count === 0) {
-              getNeighbors(index).forEach(function (cell) {
-                this.reveal(cell.id);
+            } else if (mineField[row][col].count === 0) {
+              getNeighbors(row, col).forEach(function (cell) {
+                this.reveal(cell.row * width + cell.column);
               }, this);
             }
           }
         }
       };
 
-      this.flag = function (index) {
-        mineField[index].flagged = !mineField[index].flagged;
+      this.flag = function (position) {
+        var row = Math.floor(position / height);
+        var col = position - (row * height);
+        mineField[row][col].flagged = !mineField[row][col].flagged;
       };
 
-      this.game = mineField;
+      this.game = mineField.reduce(function (prev, value) {
+        return prev.concat(value);
+      }, []);
       this.state = gameState.PLAYING;
     };
   });
