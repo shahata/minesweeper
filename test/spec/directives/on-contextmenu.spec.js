@@ -27,4 +27,12 @@ describe('Directive: onContextmenu', function () {
     element.triggerHandler('contextmenu');
     expect(scope.spy).toHaveBeenCalledWith(jasmine.any(Object));
   }));
+
+  it('should prevent default event behavior', inject(function ($compile) {
+    scope.spy = jasmine.createSpy('spy');
+    element = angular.element('<div on-contextmenu="spy($event)"></div>');
+    element = $compile(element)(scope);
+    element.triggerHandler('contextmenu', {preventDefault: angular.identity});
+    expect(scope.spy.calls[0].args[0].defaultPrevented).toBe(true);
+  }));
 });
