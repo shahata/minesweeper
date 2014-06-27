@@ -32,7 +32,7 @@ describe('Directive: onContextmenu', function () {
     scope.spy = jasmine.createSpy('spy');
     element = angular.element('<div on-contextmenu="spy($event)"></div>');
     element = $compile(element)(scope);
-    element.triggerHandler('contextmenu', {preventDefault: angular.identity});
+    element.triggerHandler('contextmenu');
     expect(scope.spy.calls[0].args[0].defaultPrevented).toBe(true);
   }));
 });

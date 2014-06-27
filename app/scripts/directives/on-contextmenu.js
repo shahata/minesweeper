@@ -8,6 +8,11 @@ angular.module('minesweeperAppInternal')
         var fn = $parse(attrs.onContextmenu);
         element.on('contextmenu', function (e) {
           scope.$apply(function () {
+            e.preventDefault();
+            if (e.defaultPrevented === undefined) {
+              //ugly workaround since preventDefault() is noop in tests
+              e.defaultPrevented = true;
+            }
             fn(scope, {$event: e});
           });
         });
