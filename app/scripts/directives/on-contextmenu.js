@@ -6,9 +6,9 @@ angular.module('minesweeperAppInternal')
       restrict: 'A',
       link: function (scope, element, attrs) {
         var fn = $parse(attrs.onContextmenu);
-        element.on('contextmenu', function () {
+        element.on('contextmenu', function (e) {
           scope.$apply(function () {
-            fn(scope);
+            fn(scope, {$event: e});
           });
         });
       }
