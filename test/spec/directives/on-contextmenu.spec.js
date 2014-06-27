@@ -16,7 +16,7 @@ describe('Directive: onContextmenu', function () {
     scope.spy = jasmine.createSpy('spy');
     element = angular.element('<div on-contextmenu="spy()"></div>');
     element = $compile(element)(scope);
-    element.trigger('contextmenu');
+    element.triggerHandler('contextmenu');
     expect(scope.spy).toHaveBeenCalled();
   }));
 });

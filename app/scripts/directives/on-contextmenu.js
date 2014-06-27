@@ -1,12 +1,16 @@
 'use strict';
 
 angular.module('minesweeperAppInternal')
-  .directive('onContextmenu', function () {
+  .directive('onContextmenu', function ($parse) {
     return {
-      template: '<div></div>',
-      restrict: 'E',
-      link: function postLink(scope, element, attrs) {
-        element.text('this is the onContextmenu directive');
+      restrict: 'A',
+      link: function (scope, element, attrs) {
+        var fn = $parse(attrs.onContextmenu);
+        element.on('contextmenu', function () {
+          scope.$apply(function () {
+            fn(scope);
+          });
+        });
       }
     };
   });
