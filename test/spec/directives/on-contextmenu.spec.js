@@ -19,4 +19,12 @@ describe('Directive: onContextmenu', function () {
     element.triggerHandler('contextmenu');
     expect(scope.spy).toHaveBeenCalled();
   }));
+
+  it('should invoke function with optional $event', inject(function ($compile) {
+    scope.spy = jasmine.createSpy('spy');
+    element = angular.element('<div on-contextmenu="spy($event)"></div>');
+    element = $compile(element)(scope);
+    element.triggerHandler('contextmenu');
+    expect(scope.spy).toHaveBeenCalledWith(jasmine.any(Object));
+  }));
 });
