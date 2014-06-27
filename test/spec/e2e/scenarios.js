@@ -69,4 +69,16 @@ describe('minesweeperApp', function () {
     expect(table.getCell(2, 3).getText()).toBe('');
   });
 
+  it('should display alert when you lose', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    table.getCell(4, 1).click();
+
+    var alertDialog = browser.switchTo().alert();
+    expect(alertDialog.getText()).toBe('You Lost!');
+    alertDialog.accept();
+
+    expect(table.getCell(4, 1).getText()).toBe('*');
+  });
+
 });
