@@ -27,16 +27,12 @@ angular.module('minesweeperAppInternal')
           }
         }
 
-        if (col !== 0) {
-          safePush(row, col - 1);
-          safePush(row - 1, col - 1);
-          safePush(row + 1, col - 1);
-        }
-        if (col !== width - 1) {
-          safePush(row, col + 1);
-          safePush(row - 1, col + 1);
-          safePush(row + 1, col + 1);
-        }
+        safePush(row, col - 1);
+        safePush(row - 1, col - 1);
+        safePush(row + 1, col - 1);
+        safePush(row, col + 1);
+        safePush(row - 1, col + 1);
+        safePush(row + 1, col + 1);
         safePush(row - 1, col);
         safePush(row + 1, col);
 

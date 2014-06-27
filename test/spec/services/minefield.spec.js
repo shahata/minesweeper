@@ -21,6 +21,8 @@ describe('Service: MinefieldGenerator', function () {
       game.push([]);
       for (var j = 0; j < 10; j++) {
         game[i].push({
+          row: i,
+          column: j,
           mine: arr.indexOf((i * 10) + j) !== -1 ? true : false,
           count: 0
         });
@@ -40,9 +42,9 @@ describe('Service: MinefieldGenerator', function () {
   it('should generate a field with given parameters', function () {
     var game = mineField(randomArr = [0, 1, 2, 3, 4, 5, 6, 7]);
 
-    new Minefield(10, 10, 8).game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.mine).toEqual(game[row][col].mine);
+    new Minefield(10, 10, 8).game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.mine).toEqual(game[value.row][value.column].mine);
       });
     });
   });
@@ -51,9 +53,9 @@ describe('Service: MinefieldGenerator', function () {
     var game = mineField([0, 1, 2, 3, 4, 5, 6, 7]);
     randomArr = [0, 1, 2, 3, 3, 4, 5, 6, 7];
 
-    new Minefield(10, 10, 8).game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.mine).toEqual(game[row][col].mine);
+    new Minefield(10, 10, 8).game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.mine).toEqual(game[value.row][value.column].mine);
       });
     });
   });
@@ -64,23 +66,10 @@ describe('Service: MinefieldGenerator', function () {
     game[1][4].count = game[1][6].count = 1;
     game[2][4].count = game[2][5].count = game[2][6].count = 1;
 
-    new Minefield(10, 10, 1).game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.mine).toEqual(game[row][col].mine);
-        expect(value.count).toEqual(game[row][col].count);
-      });
-    });
-  });
-
-  it('should not touch overflowing cells', function () {
-    var game = mineField(randomArr = [10, 19]);
-    game[0][0].count = game[0][1].count = game[1][1].count = game[2][0].count = game[2][1].count = 1;
-    game[0][8].count = game[0][9].count = game[1][8].count = game[2][8].count = game[2][9].count = 1;
-
-    new Minefield(10, 10, 2).game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.mine).toEqual(game[row][col].mine);
-        expect(value.count).toEqual(game[row][col].count);
+    new Minefield(10, 10, 1).game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.mine).toEqual(game[value.row][value.column].mine);
+        expect(value.count).toEqual(game[value.row][value.column].count);
       });
     });
   });
@@ -90,10 +79,10 @@ describe('Service: MinefieldGenerator', function () {
     game[0][1].count = game[1][0].count = game[1][1].count = 1;
     game[9][8].count = game[8][8].count = game[8][9].count = 1;
 
-    new Minefield(10, 10, 2).game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.mine).toEqual(game[row][col].mine);
-        expect(value.count).toEqual(game[row][col].count);
+    new Minefield(10, 10, 2).game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.mine).toEqual(game[value.row][value.column].mine);
+        expect(value.count).toEqual(game[value.row][value.column].count);
       });
     });
   });
@@ -130,9 +119,9 @@ describe('Service: MinefieldGenerator', function () {
     var minefield = new Minefield(10, 10, 1);
     minefield.reveal(0, 0);
 
-    minefield.game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        expect(value.revealed).toBe(row !== 4 || col !== 4);
+    minefield.game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.revealed).toBe(value.row !== 4 || value.column !== 4);
       });
     });
   });
@@ -141,10 +130,10 @@ describe('Service: MinefieldGenerator', function () {
     randomArr = [33, 34, 35, 43, 45, 53, 54, 55];
     var minefield = new Minefield(10, 10, 8);
 
-    minefield.game.forEach(function (columns, row) {
-      columns.forEach(function (value, col) {
-        if (randomArr.indexOf((row * 10) + col) === -1 && row !== 4 && col !== 4) {
-          minefield.reveal(row, col);
+    minefield.game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        if (randomArr.indexOf((value.row * 10) + value.column) === -1 && value.row !== 4 && value.column !== 4) {
+          minefield.reveal(value.row, value.column);
         }
         expect(minefield.state).toBe(gameState.PLAYING);
       });
@@ -179,4 +168,5 @@ describe('Service: MinefieldGenerator', function () {
     minefield.flag(4, 4);
     expect(minefield.game[4][4].flagged).toBe(false);
   });
+
 });
