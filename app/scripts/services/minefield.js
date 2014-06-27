@@ -88,7 +88,9 @@ angular.module('minesweeperAppInternal')
       };
 
       this.flag = function (row, col) {
-        mineField[row][col].flagged = !mineField[row][col].flagged;
+        if (!mineField[row][col].revealed) {
+          mineField[row][col].flagged = !mineField[row][col].flagged;
+        }
       };
 
       this.game = mineField;
