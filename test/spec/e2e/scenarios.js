@@ -17,6 +17,14 @@ describe('minesweeperApp', function () {
       return this.getCell(row, col).element(by.css('.cell-value'));
     };
 
+    this.getRows = function () {
+      return element.all(by.css('#minesweeper tr'));
+    };
+
+    this.getCells = function (selector) {
+      return element.all(by.css('#minesweeper td' + (selector ? selector : '')));
+    };
+
   };
 
   beforeEach(function () {
@@ -35,9 +43,10 @@ describe('minesweeperApp', function () {
   });
 
   it('should load successfully', function () {
-    browser.get('/');
-    expect(element.all(by.css('#minesweeper tr')).count()).toEqual(10);
-    expect(element.all(by.css('#minesweeper td')).count()).toEqual(100);
+    var table = new MinesweeperTable();
+    table.load();
+    expect(table.getRows().count()).toEqual(10);
+    expect(table.getCells().count()).toEqual(100);
   });
 
   it('should reveal cell on click', function () {
@@ -54,6 +63,7 @@ describe('minesweeperApp', function () {
     expect(table.getCell(0, 0).getAttribute('class')).toMatch(/\bcovered\b/);
     table.getCell(0, 0).click();
     expect(table.getCell(0, 0).getAttribute('class')).not.toMatch(/\bcovered\b/);
+    expect(table.getCells('.covered').count()).toBe(60);
   });
 
   it('should display correct values in cells', function () {

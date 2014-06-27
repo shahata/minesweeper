@@ -12,11 +12,4 @@ angular.module('minesweeperAppInternal')
       }
     });
 
-    $scope.reveal = function (row, column) {
-      $scope.minefield.reveal((row * 10) + column);
-    };
-
-    $scope.flag = function (row, column) {
-      $scope.minefield.flag((row * 10) + column);
-    };
   });

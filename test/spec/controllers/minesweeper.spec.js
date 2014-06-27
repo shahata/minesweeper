@@ -44,13 +44,4 @@ describe('Controller: MinesweeperCtrl', function () {
     expect($window.alert).toHaveBeenCalledWith('You Won!');
   }));
 
-  it('should call reveal with correct index', function () {
-    scope.reveal(2, 5);
-    expect(scope.minefield.reveal).toHaveBeenCalledWith(25);
-  });
-
-  it('should call flag with correct index', function () {
-    scope.flag(2, 5);
-    expect(scope.minefield.flag).toHaveBeenCalledWith(25);
-  });
 });
