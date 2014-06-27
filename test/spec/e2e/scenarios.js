@@ -48,6 +48,14 @@ describe('minesweeperApp', function () {
     expect(table.getValue(0, 0).isDisplayed()).toBe(true);
   });
 
+  it('should change background color on click', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    expect(table.getCell(0, 0).getAttribute('class')).toMatch(/\bcovered\b/);
+    table.getCell(0, 0).click();
+    expect(table.getCell(0, 0).getAttribute('class')).not.toMatch(/\bcovered\b/);
+  });
+
   it('should display correct values in cells', function () {
     var table = new MinesweeperTable();
     table.load();

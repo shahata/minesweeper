@@ -3,26 +3,20 @@ $font-helvetica55: "HelveticaNeueW01-55Roma", "HelveticaNeueW02-55Roma", "Helvet
 $font-helvetica65: "HelveticaNeueW01-65Medi", "HelveticaNeueW02-65Medi", "HelveticaNeueW10-65Medi", sans-serif;
 $font-helvetica75: "HelveticaNeueW01-75Bold", "HelveticaNeueW02-75Bold", "HelveticaNeueW10-75Bold", sans-serif;
 
-.container {
-  margin: auto;
-  width: 300px;
-}
+#minesweeper {
 
-.hero-unit {
-  position: absolute;
-  width: 300px;
-  font-family: $font-helvetica55;
-  font-size: 18px;
-  font-weight: 200;
-  line-height: 30px;
-  background-color: #eee;
-  border-radius: 6px;
-  padding: 60px;
-}
+  td {
+    border: 2px solid black;
+    width: 50px;
+    height: 50px;
 
-.hero-unit h1 {
-  font-family: $font-helvetica75;
-  font-size: 60px;
-  line-height: 1;
-  letter-spacing: -1px;
+    &.covered {
+      background-color: #bbbbbb;
+    }
+
+    .cell-value {
+      text-align: center;
+    }
+  }
+
 }
