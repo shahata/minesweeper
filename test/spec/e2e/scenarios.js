@@ -81,4 +81,17 @@ describe('minesweeperApp', function () {
     expect(table.getCell(4, 1).getText()).toBe('*');
   });
 
+  it('should display alert when you win', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    table.getCell(0, 0).click();
+    table.getCell(4, 0).click();
+    table.getCell(9, 9).click();
+    table.getCell(4, 9).click();
+
+    var alertDialog = browser.switchTo().alert();
+    expect(alertDialog.getText()).toBe('You Won!');
+    alertDialog.accept();
+  });
+
 });
