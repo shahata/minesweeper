@@ -104,4 +104,12 @@ describe('minesweeperApp', function () {
     alertDialog.accept();
   });
 
+  it('should flag cell when it is right clicked', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    browser.executeScript(function () {
+      angular.element('td').eq(0).triggerHandler('contextmenu');
+    });
+    expect(table.getCell(0, 0).getText()).toBe('Flag');
+  });
 });
