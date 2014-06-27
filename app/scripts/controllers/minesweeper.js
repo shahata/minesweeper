@@ -5,11 +5,13 @@ angular.module('minesweeperAppInternal')
     $scope.minefield = new Minefield(10, 10, 8);
 
     $scope.$watch('minefield.state', function (newValue) {
-      if (newValue === gameState.LOST) {
-        $window.alert('You Lost!');
-      } else if (newValue === gameState.WON) {
-        $window.alert('You Won!');
-      }
+      $scope.$evalAsync(function () {
+        if (newValue === gameState.LOST) {
+          $window.alert('You Lost!');
+        } else if (newValue === gameState.WON) {
+          $window.alert('You Won!');
+        }
+      });
     });
 
   });
