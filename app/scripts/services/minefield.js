@@ -78,6 +78,7 @@ angular.module('minesweeperAppInternal')
           mineField[row][col].revealed = true;
           if (mineField[row][col].mine) {
             this.state = gameState.LOST;
+            revealAll();
           } else {
             reminingCells--;
             if (reminingCells === 0) {
