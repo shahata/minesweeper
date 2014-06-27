@@ -44,4 +44,19 @@ describe('Controller: MinesweeperCtrl', function () {
     expect($window.alert).toHaveBeenCalledWith('You Won!');
   }));
 
+  it('should invoke game watcher before alert', inject(function (gameState, $window) {
+    var watcherInvoked;
+    scope.$watch('minefield.game[0]', function () {
+      watcherInvoked = true;
+    });
+    $window.alert.andCallFake(function () {
+      expect(watcherInvoked).toBe(true);
+    });
+    scope.$apply(function () {
+      scope.minefield.game.push('a');
+      scope.minefield.state = gameState.LOST;
+    });
+    expect($window.alert).toHaveBeenCalled();
+  }));
+
 });
