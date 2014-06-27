@@ -172,4 +172,11 @@ describe('Service: MinefieldGenerator', function () {
     minefield.reveal(4, 4);
     expect(minefield.game[4][4].revealed).toBe(false);
   });
+
+  it('should not flag a revealed cell', function () {
+    var minefield = new Minefield(10, 10, 0);
+    minefield.reveal(4, 4);
+    minefield.flag(4, 4);
+    expect(minefield.game[4][4].flagged).toBe(false);
+  });
 });
