@@ -169,4 +169,15 @@ describe('Service: MinefieldGenerator', function () {
     expect(minefield.game[4][4].flagged).toBe(false);
   });
 
+  it('should reveal all cells when game is won', function () {
+    randomArr = [44];
+    var minefield = new Minefield(10, 10, 1);
+    minefield.reveal(0, 0);
+
+    minefield.game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.revealed).toBe(true);
+      });
+    });
+  });
 });
