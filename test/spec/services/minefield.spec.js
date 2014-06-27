@@ -180,4 +180,16 @@ describe('Service: MinefieldGenerator', function () {
       });
     });
   });
+
+  it('should reveal all cells when game is lost', function () {
+    randomArr = [44];
+    var minefield = new Minefield(10, 10, 1);
+    minefield.reveal(4, 4);
+
+    minefield.game.forEach(function (columns) {
+      columns.forEach(function (value) {
+        expect(value.revealed).toBe(true);
+      });
+    });
+  });
 });
