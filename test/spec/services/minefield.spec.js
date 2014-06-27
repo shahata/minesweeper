@@ -115,13 +115,13 @@ describe('Service: MinefieldGenerator', function () {
   }));
 
   it('should keep revealing if you reveal an empty cell', function () {
-    randomArr = [44];
-    var minefield = new Minefield(10, 10, 1);
+    randomArr = [33, 34, 35, 43, 45, 53, 54, 55];
+    var minefield = new Minefield(10, 10, 8);
     minefield.reveal(0, 0);
 
     minefield.game.forEach(function (columns) {
       columns.forEach(function (value) {
-        expect(value.revealed).toBe(value.row !== 4 || value.column !== 4);
+        expect(value.revealed).toBe(!value.mine && (value.row !== 4 || value.column !== 4));
       });
     });
   });

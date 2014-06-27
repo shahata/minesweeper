@@ -39,6 +39,14 @@ angular.module('minesweeperAppInternal')
         return neighbors;
       }
 
+      function revealAll() {
+        for (var i = 0; i < height; i++) {
+          for (var j = 0; j < width; j++) {
+            mineField[i][j].revealed = true;
+          }
+        }
+      }
+
       for (var i = 0; i < height; i++) {
         mineField.push([]);
         for (var j = 0; j < width; j++) {
@@ -74,6 +82,7 @@ angular.module('minesweeperAppInternal')
             reminingCells--;
             if (reminingCells === 0) {
               this.state = gameState.WON;
+              revealAll();
             } else if (mineField[row][col].count === 0) {
               getNeighbors(row, col).forEach(function (cell) {
                 this.reveal(cell.row, cell.column);
