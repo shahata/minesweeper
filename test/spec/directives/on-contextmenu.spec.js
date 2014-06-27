@@ -33,6 +33,6 @@ describe('Directive: onContextmenu', function () {
     element = angular.element('<div on-contextmenu="spy($event)"></div>');
     element = $compile(element)(scope);
     element.triggerHandler('contextmenu');
-    expect(scope.spy.calls[0].args[0].defaultPrevented).toBe(true);
+    expect(scope.spy.calls[0].args[0].isDefaultPrevented()).toBe(true);
   }));
 });

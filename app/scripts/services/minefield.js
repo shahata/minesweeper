@@ -40,11 +40,11 @@ angular.module('minesweeperAppInternal')
       }
 
       function revealAll() {
-        for (var i = 0; i < height; i++) {
-          for (var j = 0; j < width; j++) {
-            mineField[i][j].revealed = true;
-          }
-        }
+        mineField.forEach(function (row) {
+          row.forEach(function (cell) {
+            cell.revealed = true;
+          });
+        });
       }
 
       for (var i = 0; i < height; i++) {

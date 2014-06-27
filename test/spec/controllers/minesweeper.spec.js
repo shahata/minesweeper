@@ -4,7 +4,10 @@ describe('Controller: MinesweeperCtrl', function () {
 
   beforeEach(function () {
     module('minesweeperAppInternal');
-    module({$window: jasmine.createSpyObj('$window', ['alert'])});
+    module({
+      $window: jasmine.createSpyObj('$window', ['alert']),
+      $translate: angular.identity
+    });
     module(function ($provide) {
       $provide.factory('Minefield', function (gameState) {
         return function () {
@@ -34,14 +37,14 @@ describe('Controller: MinesweeperCtrl', function () {
     scope.$apply(function () {
       scope.minefield.state = gameState.LOST;
     });
-    expect($window.alert).toHaveBeenCalledWith('You Lost!');
+    expect($window.alert).toHaveBeenCalledWith('LOST');
   }));
 
   it('should alert that you lost', inject(function (gameState, $window) {
     scope.$apply(function () {
       scope.minefield.state = gameState.WON;
     });
-    expect($window.alert).toHaveBeenCalledWith('You Won!');
+    expect($window.alert).toHaveBeenCalledWith('WON');
   }));
 
   it('should invoke game watcher before alert', inject(function (gameState, $window) {
