@@ -31,7 +31,7 @@ describe('minesweeperApp', function () {
     browser.addMockModule('minesweeperAppMocks', function () {});
     browser.addMockModule('randomMock', function () {
       var randomIndex = 0;
-      var randomArr = [41, 42, 43, 44, 45, 46, 47, 48];
+      var randomArr = [4, 1, 4, 2, 4, 3, 4, 4, 4, 5, 4, 6, 4, 7, 4, 8];
       angular.module('randomMock', []).value('random', function () {
         return randomArr[randomIndex++];
       });
