@@ -60,9 +60,9 @@ describe('minesweeperApp', function () {
   it('should change background color on click', function () {
     var table = new MinesweeperTable();
     table.load();
-    expect(table.getCell(0, 0).getAttribute('class')).toMatch(/\bcovered\b/);
+    expect(table.getCell(0, 0)).toHaveClass('covered');
     table.getCell(0, 0).click();
-    expect(table.getCell(0, 0).getAttribute('class')).not.toMatch(/\bcovered\b/);
+    expect(table.getCell(0, 0)).not.toHaveClass('covered');
     expect(table.getCells('.covered').count()).toBe(60);
   });
 
