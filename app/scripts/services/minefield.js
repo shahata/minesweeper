@@ -8,17 +8,18 @@ angular.module('minesweeperAppInternal')
   })
   .factory('Minefield', function Minefield(minePlanter, gameState) {
     return function (rows, columns, mines) {
+      var game, remainingCells;
 
-      function markNeighbor(cell) {
-        cell.count++;
+      function cellAt(coord) {
+        return game[coord.row][coord.column];
       }
 
-      function getNeighbors(row, column) {
+      function getNeighbors(coord) {
         var neighbors = [];
 
         function pushNeighbor(drow, dcolumn) {
-          var actualRow = row + drow;
-          var actualColumn = column + dcolumn;
+          var actualRow = coord.row + drow;
+          var actualColumn = coord.column + dcolumn;
 
           if (game[actualRow] && game[actualRow][actualColumn]) {
             neighbors.push(game[actualRow][actualColumn]);
@@ -45,15 +46,17 @@ angular.module('minesweeperAppInternal')
         });
       }
 
-      function plantMines(game) {
+      function plantMines() {
         minePlanter(rows, columns, mines).forEach(function (coord) {
-          game[coord.row][coord.column].mine = true;
-          getNeighbors(coord.row, coord.column).forEach(markNeighbor);
+          cellAt(coord).mine = true;
+          getNeighbors(coord).forEach(function (cell) {
+            cell.count++;
+          });
         });
       }
 
       function initGame() {
-        var game = [];
+        game = [];
         _(rows).times(function (row) {
           game.push([]);
           _(columns).times(function (column) {
@@ -69,11 +72,6 @@ angular.module('minesweeperAppInternal')
             });
           });
         });
-        return game;
-      }
-
-      function cellAt(coord) {
-        return game[coord.row][coord.column];
       }
 
       this.reveal = function (coord) {
@@ -83,12 +81,12 @@ angular.module('minesweeperAppInternal')
             this.state = gameState.LOST;
             revealAll();
           } else {
-            reminingCells--;
-            if (reminingCells === 0) {
+            remainingCells--;
+            if (remainingCells === 0) {
               this.state = gameState.WON;
               revealAll();
             } else if (cellAt(coord).count === 0) {
-              getNeighbors(coord.row, coord.column).forEach(function (cell) {
+              getNeighbors(coord).forEach(function (cell) {
                 this.reveal(cell.coord);
               }, this);
             }
@@ -102,10 +100,14 @@ angular.module('minesweeperAppInternal')
         }
       };
 
-      var reminingCells = (rows * columns) - mines;
-      var game = initGame();
-      plantMines(game);
+      initGame();
+      plantMines();
 
+      remainingCells = game.reduce(function (count, row) {
+        return count + row.filter(function (cell) {
+          return !cell.revealed && !cell.mine;
+        }).length;
+      }, 0);
       this.game = game;
       this.state = gameState.PLAYING;
     };
