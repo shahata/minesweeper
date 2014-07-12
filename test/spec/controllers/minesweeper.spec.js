@@ -13,18 +13,16 @@ describe('Controller: MinesweeperCtrl', function () {
         return jasmine.createSpy('Minefield').andCallFake(function () {
           this.game = [];
           this.state = gameState.PLAYING;
-          this.reveal = jasmine.createSpy('reveal');
-          this.flag = jasmine.createSpy('flag');
         });
       });
     });
   });
 
-  var MinesweeperCtrl, scope;
+  var ctrl, scope;
 
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    MinesweeperCtrl = $controller('MinesweeperCtrl', {
+    ctrl = $controller('MinesweeperCtrl', {
       $scope: scope
     });
   }));
@@ -60,15 +58,13 @@ describe('Controller: MinesweeperCtrl', function () {
   }));
 
   it('should invoke game watcher before alert', inject(function (gameState, $window) {
-    var watcherInvoked;
-    scope.$watch('minefield.game[0]', function () {
-      watcherInvoked = true;
-    });
+    var secondlevelWatcher = jasmine.createSpy('secondlevelWatcher');
+    scope.$watch('minefield.game[0]', secondlevelWatcher);
     $window.alert.andCallFake(function () {
-      expect(watcherInvoked).toBe(true);
+      expect(secondlevelWatcher).toHaveBeenCalled();
     });
     scope.$apply(function () {
-      scope.minefield.game.push('a');
+      scope.minefield.game.unshift('a');
       scope.minefield.state = gameState.LOST;
     });
     expect($window.alert).toHaveBeenCalled();

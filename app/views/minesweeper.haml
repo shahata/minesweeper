@@ -6,6 +6,6 @@
     %input{:type => "submit", :value => "Restart"}
   %table#minesweeper
     %tr{:"ng-repeat" => "row in minefield.game"}
-      %td{:"ng-repeat" => "cell in row", :"ng-click" => "minefield.reveal(cell.coord)", :"on-contextmenu" => "minefield.flag(cell.coord)", :"ng-class" => "{covered: !cell.revealed}"}
+      %td{:"ng-repeat" => "cell in row", :"ng-click" => "cell.$reveal()", :"on-contextmenu" => "cell.$flag()", :"ng-class" => "{covered: !cell.revealed}"}
         .cell-value{:"ng-show" => "cell.revealed"} {{cell.mine ? '*' : cell.count ? cell.count : ''}}
         .cell-flag{:"ng-show" => "cell.flagged"} Flag

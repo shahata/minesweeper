@@ -6,13 +6,9 @@ angular.module('minesweeperAppInternal')
     WON: 'won',
     PLAYING: 'playing'
   })
-  .factory('Minefield', function Minefield(minePlanter, gameState) {
+  .factory('Minefield', function Minefield(minePlanter, gameState, Cell) {
     return function (rows, columns, mines) {
-      var game, remainingCells;
-
-      function cellAt(coord) {
-        return game[coord.row][coord.column];
-      }
+      var game, remainingCells, self = this;
 
       function getNeighbors(coord) {
         var neighbors = [];
@@ -46,9 +42,26 @@ angular.module('minesweeperAppInternal')
         });
       }
 
+      function gameOver(state) {
+        self.state = state;
+        revealAll();
+      }
+
+      function onCellRevealed(cell) {
+        if (cell.mine) {
+          gameOver(gameState.LOST);
+        } else if (--remainingCells === 0) {
+          gameOver(gameState.WON);
+        } else if (cell.count === 0) {
+          getNeighbors(cell.coord).forEach(function (neighbor) {
+            neighbor.$reveal();
+          });
+        }
+      }
+
       function plantMines() {
         minePlanter(rows, columns, mines).forEach(function (coord) {
-          cellAt(coord).mine = true;
+          game[coord.row][coord.column].mine = true;
           getNeighbors(coord).forEach(function (cell) {
             cell.count++;
           });
@@ -60,45 +73,10 @@ angular.module('minesweeperAppInternal')
         _(rows).times(function (row) {
           game.push([]);
           _(columns).times(function (column) {
-            game[row].push({
-              count: 0,
-              mine: false,
-              revealed: false,
-              flagged: false,
-              coord: {
-                row: row,
-                column: column
-              }
-            });
+            game[row].push(new Cell({row: row, column: column}, onCellRevealed));
           });
         });
       }
-
-      this.reveal = function (coord) {
-        if (!cellAt(coord).revealed && !cellAt(coord).flagged) {
-          cellAt(coord).revealed = true;
-          if (cellAt(coord).mine) {
-            this.state = gameState.LOST;
-            revealAll();
-          } else {
-            remainingCells--;
-            if (remainingCells === 0) {
-              this.state = gameState.WON;
-              revealAll();
-            } else if (cellAt(coord).count === 0) {
-              getNeighbors(coord).forEach(function (cell) {
-                this.reveal(cell.coord);
-              }, this);
-            }
-          }
-        }
-      };
-
-      this.flag = function (coord) {
-        if (!cellAt(coord).revealed) {
-          cellAt(coord).flagged = !cellAt(coord).flagged;
-        }
-      };
 
       initGame();
       plantMines();

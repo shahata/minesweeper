@@ -50,6 +50,7 @@
     <script src="scripts/controllers/minesweeper.js"></script>
     <script src="scripts/directives/on-contextmenu.js"></script>
     <script src="scripts/services/mine-planter.js"></script>
+    <script src="scripts/services/cell.js"></script>
     <!-- endbuild --><!-- scripts -->
 
     <!-- #if( false ) -->
