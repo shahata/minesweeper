@@ -1,192 +1,147 @@
 'use strict';
 
 describe('Factory: Minefield', function () {
-  var Minefield, randomArr;
-
   beforeEach(function () {
-    var randomIndex = 0;
     module('minesweeperAppInternal');
-    module({random: function () {
-      return randomArr[randomIndex++];
-    }});
+    module({minePlanter: jasmine.createSpy('minePlanter')});
   });
 
-  beforeEach(inject(function (_Minefield_) {
-    Minefield = _Minefield_;
-  }));
-
-  function mineField(arr) {
-    var game = [];
-    for (var i = 0; i < 10; i++) {
-      game.push([]);
-      for (var j = 0; j < 10; j++) {
-        game[i].push({
-          mine: false,
-          count: 0
-        });
-      }
-    }
-
-    for (i = 0; i < arr.length; i += 2) {
-      game[arr[i]][arr[i + 1]].mine = true;
-    }
-
-    return game;
+  function forEachTile(game, fn) {
+    game.forEach(function (row) {
+      row.forEach(fn);
+    });
   }
 
-  it('should generate of correct length', function () {
-    var game = new Minefield(15, 20, 0).game;
-    expect(game.length).toBe(15);
-    game.forEach(function (colmuns) {
-      expect(colmuns.length).toBe(20);
+  function aMinefield(options) {
+    var minefield;
+    inject(function (Minefield, minePlanter) {
+      options.mines = options.mines || [];
+      minePlanter.andReturn(options.mines);
+      minefield = new Minefield(
+            options.rows    || 12,
+            options.columns || 10,
+            options.mines.length);
+    });
+    return minefield;
+  }
+
+  it('should have a game board with X rows', function () {
+    var game = aMinefield({rows: 12}).game;
+    expect(game.length).toBe(12);
+  });
+
+  it('should have a game board with Y columns', function () {
+    var game = aMinefield({columns: 10}).game;
+    game.forEach(function (row) {
+      expect(row.length).toBe(10);
     });
   });
 
-  it('should generate a field with given parameters', function () {
-    var game = mineField(randomArr = [0, 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7]);
+  it('should have a game board with Z mines', inject(function (minePlanter) {
+    var game = aMinefield({mines: [{row: 0, column: 1}, {row: 1, column: 2}]}).game;
+    expect(minePlanter).toHaveBeenCalledWith(12, 10, 2);
+    expect(game[0][1].mine).toBe(true);
+    expect(game[1][2].mine).toBe(true);
+  }));
 
-    new Minefield(10, 10, 8).game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.mine).toEqual(game[cell.coord.row][cell.coord.column].mine);
-      });
+  it('should mark the number of mines on the mine neighbors', function () {
+    var game = aMinefield({rows: 3, columns: 3, mines: [{row: 1, column: 1}]}).game;
+    var expectedMine = {row: 1, column: 1};
+    forEachTile(game, function (tile) {
+      if (!angular.equals(expectedMine, tile.coord)) {
+        expect(tile.count).toBe(1);
+      }
     });
   });
 
-  it('should try to randomly select again if mine already exist', function () {
-    var game = mineField([0, 0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7]);
-    randomArr = [0, 0, 0, 1, 0, 2, 0, 3, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7];
-
-    new Minefield(10, 10, 8).game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.mine).toEqual(game[cell.coord.row][cell.coord.column].mine);
-      });
-    });
+  it('should mark the number of mines for neighbors of a corner mine', function () {
+    var game = aMinefield({rows: 3, columns: 3, mines: [{row: 0, column: 0}]}).game;
+    expect(game[1][1].count).toBe(1);
   });
 
-  it('should count for each cell how many mines it has around it', function () {
-    var game = mineField(randomArr = [1, 5]);
-    game[0][4].count = game[0][5].count = game[0][6].count = 1;
-    game[1][4].count = game[1][6].count = 1;
-    game[2][4].count = game[2][5].count = game[2][6].count = 1;
-
-    new Minefield(10, 10, 1).game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.mine).toEqual(game[cell.coord.row][cell.coord.column].mine);
-        expect(cell.count).toEqual(game[cell.coord.row][cell.coord.column].count);
-      });
-    });
-  });
-
-  it('should not touch cells that are out of boundaries', function () {
-    var game = mineField(randomArr = [0, 0, 9, 9]);
-    game[0][1].count = game[1][0].count = game[1][1].count = 1;
-    game[9][8].count = game[8][8].count = game[8][9].count = 1;
-
-    new Minefield(10, 10, 2).game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.mine).toEqual(game[cell.coord.row][cell.coord.column].mine);
-        expect(cell.count).toEqual(game[cell.coord.row][cell.coord.column].count);
-      });
-    });
-  });
-
-  it('should have 8 mines around the single none mine', function () {
-    randomArr = [3, 3, 3, 4, 3, 5, 4, 3, 4, 5, 5, 3, 5, 4, 5, 5];
-    var game = new Minefield(10, 10, 8).game;
-    expect(game[4][4].count).toBe(8);
+  it('should count the number of mines on a tile that neighbors two mines', function () {
+    var game = aMinefield({rows: 3, columns: 3, mines:
+      [{row: 0, column: 1}, {row: 1, column: 1}]}).game;
+    expect(game[0][0].count).toBe(2);
   });
 
   it('should reveal the cell', function () {
-    randomArr = [4, 4];
-    var minefield = new Minefield(10, 10, 1);
-    minefield.reveal({row: 4, column: 3});
-    expect(minefield.game[4][3].revealed).toBe(true);
+    var minefield = aMinefield({});
+    minefield.reveal({row: 0, column: 0});
+    expect(minefield.game[0][0].revealed).toBe(true);
   });
 
   it('should lose if you reveal a mine', inject(function (gameState) {
-    randomArr = [4, 4];
-    var minefield = new Minefield(10, 10, 1);
-    minefield.reveal({row: 4, column: 4});
-    expect(minefield.game[4][4].revealed).toBe(true);
+    var minefield = aMinefield({mines: [{row: 0, column: 0}]});
+    expect(minefield.state).toBe(gameState.PLAYING);
+    minefield.reveal({row: 0, column: 0});
     expect(minefield.state).toBe(gameState.LOST);
   }));
 
-  it('should keep revealing if you reveal an empty cell', function () {
-    randomArr = [3, 3, 3, 4, 3, 5, 4, 3, 4, 5, 5, 3, 5, 4, 5, 5];
-    var minefield = new Minefield(10, 10, 8);
-    minefield.reveal({row: 0, column: 0});
-
-    minefield.game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.revealed).toBe(!cell.mine && (cell.coord.row !== 4 || cell.coord.column !== 4));
-      });
-    });
-  });
-
   it('should win if only mines are still not revealed', inject(function (gameState) {
-    randomArr = [3, 3, 3, 4, 3, 5, 4, 3, 4, 5, 5, 3, 5, 4, 5, 5];
-    var minefield = new Minefield(10, 10, 8);
-
-    minefield.game.forEach(function (row) {
-      row.forEach(function (cell) {
-        if ([3, 4, 5].indexOf(cell.coord.row) === -1 && [3, 4, 5].indexOf(cell.coord.column) === -1) {
-          minefield.reveal(cell.coord);
-        }
-        expect(minefield.state).toBe(gameState.PLAYING);
-      });
+    var minefield = aMinefield({mines: [{row: 0, column: 0}]});
+    expect(minefield.state).toBe(gameState.PLAYING);
+    forEachTile(minefield.game, function (tile) {
+      if (!tile.mine) {
+        minefield.reveal(tile.coord);
+      }
     });
-    minefield.reveal({row: 4, column: 4});
     expect(minefield.state).toBe(gameState.WON);
   }));
 
+  it('should keep revealing if you reveal an empty cell', function () {
+    var minefield = aMinefield({rows: 4, columns: 1, mines: [{row: 2, column: 0}]});
+    minefield.reveal({row: 0, column: 0});
+
+    forEachTile(minefield.game, function (tile) {
+      expect(tile.revealed).toBe(tile.coord.row < 2);
+    });
+  });
+
   it('should flag the cell', function () {
-    var minefield = new Minefield(10, 10, 0);
-    minefield.flag({row: 4, column: 4});
-    expect(minefield.game[4][4].flagged).toBe(true);
+    var minefield = aMinefield({});
+    minefield.flag({row: 0, column: 0});
+    expect(minefield.game[0][0].flagged).toBe(true);
   });
 
   it('should unflag the cell', function () {
-    var minefield = new Minefield(10, 10, 0);
-    minefield.flag({row: 4, column: 4});
-    minefield.flag({row: 4, column: 4});
-    expect(minefield.game[4][4].flagged).toBe(false);
+    var minefield = aMinefield({});
+    minefield.flag({row: 0, column: 0});
+    minefield.flag({row: 0, column: 0});
+    expect(minefield.game[0][0].flagged).toBe(false);
   });
 
   it('should not reveal a flagged cell', function () {
-    var minefield = new Minefield(10, 10, 0);
-    minefield.flag({row: 4, column: 4});
-    minefield.reveal({row: 4, column: 4});
-    expect(minefield.game[4][4].revealed).toBe(false);
+    var minefield = aMinefield({});
+    minefield.flag({row: 0, column: 0});
+    minefield.reveal({row: 0, column: 0});
+    expect(minefield.game[0][0].revealed).toBe(false);
   });
 
   it('should not flag a revealed cell', function () {
-    var minefield = new Minefield(10, 10, 0);
-    minefield.reveal({row: 4, column: 4});
-    minefield.flag({row: 4, column: 4});
-    expect(minefield.game[4][4].flagged).toBe(false);
+    var minefield = aMinefield({});
+    minefield.reveal({row: 0, column: 0});
+    minefield.flag({row: 0, column: 0});
+    expect(minefield.game[0][0].flagged).toBe(false);
   });
 
-  it('should reveal all cells when game is won', function () {
-    randomArr = [4, 4];
-    var minefield = new Minefield(10, 10, 1);
+  it('should reveal all cells when game is won', inject(function (gameState) {
+    var minefield = aMinefield({mines: [{row: 0, column: 0}]});
+    minefield.reveal({row: 0, column: 2});
+
+    forEachTile(minefield.game, function (tile) {
+      expect(tile.revealed).toBe(true);
+    });
+    expect(minefield.state).toBe(gameState.WON);
+  }));
+
+  it('should reveal all cells when game is lost', inject(function (gameState) {
+    var minefield = aMinefield({mines: [{row: 0, column: 0}]});
     minefield.reveal({row: 0, column: 0});
 
-    minefield.game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.revealed).toBe(true);
-      });
+    forEachTile(minefield.game, function (tile) {
+      expect(tile.revealed).toBe(true);
     });
-  });
-
-  it('should reveal all cells when game is lost', function () {
-    randomArr = [4, 4];
-    var minefield = new Minefield(10, 10, 1);
-    minefield.reveal({row: 4, column: 4});
-
-    minefield.game.forEach(function (row) {
-      row.forEach(function (cell) {
-        expect(cell.revealed).toBe(true);
-      });
-    });
-  });
+    expect(minefield.state).toBe(gameState.LOST);
+  }));
 });

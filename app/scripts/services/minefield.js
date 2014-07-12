@@ -1,15 +1,12 @@
 'use strict';
 
 angular.module('minesweeperAppInternal')
-  .value('random', function (max) {
-    return Math.floor(Math.random() * max);
-  })
   .constant('gameState', {
     LOST: 'lost',
     WON: 'won',
     PLAYING: 'playing'
   })
-  .factory('Minefield', function Minefield(random, gameState) {
+  .factory('Minefield', function Minefield(minePlanter, gameState) {
     return function (rows, columns, mines) {
 
       function markNeighbor(cell) {
@@ -49,16 +46,10 @@ angular.module('minesweeperAppInternal')
       }
 
       function plantMines(game) {
-        var plantedMines = 0;
-        while (plantedMines !== mines) {
-          var row = random(rows);
-          var column = random(columns);
-          if (!game[row][column].mine) {
-            plantedMines++;
-            game[row][column].mine = true;
-            getNeighbors(row, column).forEach(markNeighbor);
-          }
-        }
+        minePlanter(rows, columns, mines).forEach(function (coord) {
+          game[coord.row][coord.column].mine = true;
+          getNeighbors(coord.row, coord.column).forEach(markNeighbor);
+        });
       }
 
       function initGame() {
