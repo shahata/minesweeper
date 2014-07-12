@@ -55,8 +55,17 @@ angular.module('minesweeperAppInternal')
         revealAll();
       }
 
-      function onCellRevealed(cell) {
-        if (cell.mine) {
+      function onCellRevealed(cell, auto) {
+        if (auto) {
+          var neighbors = getNeighbors(cell.coord);
+          if (neighbors.filter(function (neighbor) {
+            return neighbor.flagged;
+          }).length >= cell.count) {
+            neighbors.forEach(function (neighbor) {
+              neighbor.$reveal();
+            });
+          }
+        } else if (cell.mine) {
           gameOver(gameState.LOST);
         } else if (--remainingCells === 0) {
           gameOver(gameState.WON);

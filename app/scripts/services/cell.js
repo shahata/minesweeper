@@ -9,6 +9,11 @@ angular.module('minesweeperAppInternal')
         revealed: false,
         flagged: false,
         coord: coord,
+        $autoReveal: function () {
+          if (this.revealed) {
+            (onCellRevealed || angular.noop)(this, true);
+          }
+        },
         $reveal: function () {
           if (!this.revealed && !this.flagged) {
             this.revealed = true;

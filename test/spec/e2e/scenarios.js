@@ -78,7 +78,11 @@ describe('minesweeperApp', function () {
                 scope[property] = new Minefield(10, 10, 8);
                 scope[property].game.forEach(function (row) {
                   row.forEach(function (cell) {
-                    delete cell.$reveal;
+                    for (var x in cell) {
+                      if (x[0] === '$') {
+                        delete cell[x];
+                      }
+                    }
                   });
                 });
                 return (gameId === 'fail' ? $q.reject() : $q.when());
@@ -171,6 +175,21 @@ describe('minesweeperApp', function () {
       table.getCell(0, 0).click();
       expect(table.getCell(0, 0)).not.toHaveClass('covered');
       expect(table.getCells('.covered').count()).toBe(60);
+    });
+
+    it('should auto reveal on dblclick', function () {
+      var table = new MinesweeperTable();
+      table.load();
+      table.getCell(4, 0).click();
+      browser.executeScript(function () {
+        angular.element('td').eq(41).triggerHandler('contextmenu');
+        angular.element('td').eq(40).triggerHandler('dblclick');
+      });
+      expect(table.getCell(3, 0)).not.toHaveClass('covered');
+      expect(table.getCell(3, 1)).not.toHaveClass('covered');
+      expect(table.getCell(5, 0)).not.toHaveClass('covered');
+      expect(table.getCell(5, 1)).not.toHaveClass('covered');
+      expect(table.getCells('.covered').count()).toBe(95);
     });
 
     it('should display correct values in cells', function () {

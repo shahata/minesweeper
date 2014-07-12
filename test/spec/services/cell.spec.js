@@ -34,6 +34,14 @@ describe('Service: Cell', function () {
     expect(revealSpy).toHaveBeenCalledWith(cell);
   });
 
+  it('should invoke callback when cell is auto revealed', function () {
+    var revealSpy = jasmine.createSpy('revealSpy');
+    var cell = aCell({row: 0, column: 0}, revealSpy);
+    cell.$reveal();
+    cell.$autoReveal();
+    expect(revealSpy).toHaveBeenCalledWith(cell, true);
+  });
+
   it('should flag the cell', function () {
     var cell = aCell();
     cell.$flag();
@@ -59,6 +67,13 @@ describe('Service: Cell', function () {
     cell.$reveal();
     cell.$flag();
     expect(cell.flagged).toBe(false);
+  });
+
+  it('should not auto reveal a non-revealed cell', function () {
+    var revealSpy = jasmine.createSpy('revealSpy');
+    var cell = aCell({row: 0, column: 0}, revealSpy);
+    cell.$autoReveal();
+    expect(revealSpy).not.toHaveBeenCalled();
   });
 
 });

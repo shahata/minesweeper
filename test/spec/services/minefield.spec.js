@@ -119,4 +119,25 @@ describe('Factory: Minefield', function () {
       expect(cell.revealed).toBe(true);
     });
   });
+
+  it('should reveal all cells around auto revealed cell', function () {
+    var game = aGame({rows: 3, columns: 3, mines: [{row: 0, column: 0}]});
+    game[0][0].$flag();
+    game[1][1].$reveal();
+    game[1][1].$autoReveal();
+
+    forEachCell(game, function (cell) {
+      expect(cell.revealed).toBe(true);
+    });
+  });
+
+  it('should not auto reveal if not enough cells are flagged', function () {
+    var game = aGame({rows: 3, columns: 3, mines: [{row: 0, column: 0}]});
+    game[1][1].$reveal();
+    game[1][1].$autoReveal();
+
+    forEachCell(game, function (cell) {
+      expect(cell.revealed).toBe(angular.equals(cell.coord, {row: 1, column: 1}));
+    });
+  });
 });
