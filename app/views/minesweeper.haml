@@ -1,4 +1,5 @@
-%div{:"ng-controller" => "MinesweeperCtrl"}
+%div
+  %a{:href => "#/"} << Back
   %form{:"ng-submit" => "restart()"}
     %input{:"ng-model" => "parameters.rows", :type => "number"}
     %input{:"ng-model" => "parameters.columns", :type => "number"}

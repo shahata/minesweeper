@@ -1,7 +1,13 @@
 'use strict';
 
 angular.module('minesweeperAppInternal')
-  .controller('MinesweeperCtrl', function ($scope, Minefield, gameState, $window, $translate) {
+  .controller('MinesweeperCtrl', function ($scope, Minefield, gameState, $window, $translate, $routeParams, games, $location) {
+    games.get($routeParams.gameId).$bind($scope, 'minefield').then(function () {
+      $scope.minefield = new Minefield($scope.minefield);
+    }).catch(function () {
+      $location.path('/');
+    });
+
     $scope.parameters = {
       rows: 10,
       columns: 10,
@@ -24,7 +30,5 @@ angular.module('minesweeperAppInternal')
         }
       });
     });
-
-    $scope.restart();
 
   });

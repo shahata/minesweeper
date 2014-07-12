@@ -1,0 +1,5 @@
+%form{:"ng-submit" => "newGame(name)"}
+  %input{:"ng-model" => "name"}
+  %input{:type => "submit", :value => "New"}
+%div{:"ng-repeat" => "(gameId, gameData) in games"}
+  %a{:"ng-href" => "#/{{gameId}}"}{{gameData.name}}

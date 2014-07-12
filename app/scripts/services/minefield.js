@@ -42,6 +42,14 @@ angular.module('minesweeperAppInternal')
         });
       }
 
+      function loadGame(load) {
+        game = load.game.map(function (row) {
+          return row.map(function (cell) {
+            return angular.extend(new Cell(cell.coord, onCellRevealed), cell);
+          });
+        });
+      }
+
       function gameOver(state) {
         self.state = state;
         revealAll();
@@ -78,8 +86,12 @@ angular.module('minesweeperAppInternal')
         });
       }
 
-      initGame();
-      plantMines();
+      if (arguments.length === 1) {
+        loadGame(arguments[0]);
+      } else {
+        initGame();
+        plantMines();
+      }
 
       remainingCells = game.reduce(function (count, row) {
         return count + row.filter(function (cell) {

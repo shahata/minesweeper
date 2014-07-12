@@ -1,26 +1,33 @@
 'use strict';
 
 describe('Controller: MinesweeperCtrl', function () {
+  var gamePromise, $q;
 
   beforeEach(function () {
     module('minesweeperAppInternal');
     module({
       $window: jasmine.createSpyObj('$window', ['alert']),
-      $translate: angular.identity
-    });
-    module(function ($provide) {
-      $provide.factory('Minefield', function (gameState) {
-        return jasmine.createSpy('Minefield').andCallFake(function () {
-          this.game = [];
-          this.state = gameState.PLAYING;
-        });
-      });
+      $location: jasmine.createSpyObj('$location', ['path']),
+      $translate: angular.identity,
+      $routeParams: {gameId: 'shahar'},
+      Minefield: jasmine.createSpy('Minefield').andReturn({game: []}),
+      games: {get: function (gameId) {
+        expect(gameId).toBe('shahar');
+        return {$bind: function (scope, property) {
+          gamePromise = $q.defer();
+          return gamePromise.promise.then(function (result) {
+            scope[property] = result;
+            return angular.noop;
+          });
+        }};
+      }}
     });
   });
 
   var ctrl, scope;
 
-  beforeEach(inject(function ($controller, $rootScope) {
+  beforeEach(inject(function ($controller, $rootScope, _$q_) {
+    $q = _$q_;
     scope = $rootScope.$new();
     ctrl = $controller('MinesweeperCtrl', {
       $scope: scope
@@ -28,8 +35,16 @@ describe('Controller: MinesweeperCtrl', function () {
   }));
 
   it('should have a minefield on the scope', inject(function (Minefield) {
-    expect(Minefield).toHaveBeenCalledWith(10, 10, 8);
+    gamePromise.resolve('loadedGame');
+    scope.$digest();
+    expect(Minefield).toHaveBeenCalledWith('loadedGame');
     expect(scope.minefield.game.length).toBe(0);
+  }));
+
+  it('should navigate back to list on failure', inject(function ($location) {
+    gamePromise.reject();
+    scope.$digest();
+    expect($location.path).toHaveBeenCalledWith('/');
   }));
 
   it('should restart with new minefield parameters', inject(function (Minefield) {
@@ -45,6 +60,7 @@ describe('Controller: MinesweeperCtrl', function () {
 
   it('should alert that you lost', inject(function (gameState, $window) {
     scope.$apply(function () {
+      scope.restart();
       scope.minefield.state = gameState.LOST;
     });
     expect($window.alert).toHaveBeenCalledWith('LOST');
@@ -52,6 +68,7 @@ describe('Controller: MinesweeperCtrl', function () {
 
   it('should alert that you lost', inject(function (gameState, $window) {
     scope.$apply(function () {
+      scope.restart();
       scope.minefield.state = gameState.WON;
     });
     expect($window.alert).toHaveBeenCalledWith('WON');
@@ -64,6 +81,7 @@ describe('Controller: MinesweeperCtrl', function () {
       expect(secondlevelWatcher).toHaveBeenCalled();
     });
     scope.$apply(function () {
+      scope.restart();
       scope.minefield.game.unshift('a');
       scope.minefield.state = gameState.LOST;
     });

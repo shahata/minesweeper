@@ -29,6 +29,12 @@ describe('Factory: Minefield', function () {
     return aMinefield(options).game;
   }
 
+  it('should load a previously serialized game', inject(function (Minefield) {
+    var cell = new Minefield({game: [[{mine: true}]]}).game[0][0];
+    expect(cell.$reveal).toBeDefined();
+    expect(cell.mine).toBe(true);
+  }));
+
   it('should have a game board with X rows', function () {
     var game = aGame({rows: 12});
     expect(game.length).toBe(12);
