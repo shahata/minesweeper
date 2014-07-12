@@ -9,6 +9,13 @@ describe('minesweeperApp', function () {
       browser.get('/');
     };
 
+    this.restart = function (rows, columns, mines) {
+      element(by.model('parameters.rows')).clear().sendKeys(rows);
+      element(by.model('parameters.columns')).clear().sendKeys(columns);
+      element(by.model('parameters.mines')).clear().sendKeys(mines);
+      element(by.buttonText('Restart')).click();
+    };
+
     this.getCell = function (row, col) {
       return rows.get(row).all(by.css('td')).get(col);
     };
@@ -33,6 +40,9 @@ describe('minesweeperApp', function () {
       var randomIndex = 0;
       var randomArr = [4, 1, 4, 2, 4, 3, 4, 4, 4, 5, 4, 6, 4, 7, 4, 8];
       angular.module('randomMock', []).value('random', function () {
+        if (randomIndex === randomArr.length) {
+          randomIndex = 0;
+        }
         return randomArr[randomIndex++];
       });
     });
@@ -47,6 +57,14 @@ describe('minesweeperApp', function () {
     table.load();
     expect(table.getRows().count()).toEqual(10);
     expect(table.getCells().count()).toEqual(100);
+  });
+
+  it('should load successfully', function () {
+    var table = new MinesweeperTable();
+    table.load();
+    table.restart(11, 12, 8);
+    expect(table.getRows().count()).toEqual(11);
+    expect(table.getCells().count()).toEqual(11 * 12);
   });
 
   it('should reveal cell on click', function () {

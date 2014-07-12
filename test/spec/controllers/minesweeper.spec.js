@@ -10,12 +10,12 @@ describe('Controller: MinesweeperCtrl', function () {
     });
     module(function ($provide) {
       $provide.factory('Minefield', function (gameState) {
-        return function () {
+        return jasmine.createSpy('Minefield').andCallFake(function () {
           this.game = [];
           this.state = gameState.PLAYING;
           this.reveal = jasmine.createSpy('reveal');
           this.flag = jasmine.createSpy('flag');
-        };
+        });
       });
     });
   });
@@ -29,9 +29,21 @@ describe('Controller: MinesweeperCtrl', function () {
     });
   }));
 
-  it('should have a minefield on the scope', function () {
+  it('should have a minefield on the scope', inject(function (Minefield) {
+    expect(Minefield).toHaveBeenCalledWith(10, 10, 8);
     expect(scope.minefield.game.length).toBe(0);
-  });
+  }));
+
+  it('should restart with new minefield parameters', inject(function (Minefield) {
+    var prev = scope.minefield;
+    scope.parameters.rows = 3;
+    scope.parameters.columns = 3;
+    scope.parameters.mines = 1;
+
+    scope.restart();
+    expect(Minefield).toHaveBeenCalledWith(3, 3, 1);
+    expect(scope.minefield).not.toBe(prev);
+  }));
 
   it('should alert that you lost', inject(function (gameState, $window) {
     scope.$apply(function () {
