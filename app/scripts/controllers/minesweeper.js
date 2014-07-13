@@ -8,6 +8,12 @@ angular.module('minesweeperAppInternal')
       $location.path('/');
     });
 
+    $scope.$watch('minefield.game[0][0].$reveal', function (newValue) {
+      if (!newValue) {
+        $scope.minefield = new Minefield($scope.minefield);
+      }
+    });
+
     $scope.parameters = {
       rows: 10,
       columns: 10,

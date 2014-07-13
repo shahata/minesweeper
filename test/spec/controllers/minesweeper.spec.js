@@ -10,7 +10,9 @@ describe('Controller: MinesweeperCtrl', function () {
       $location: jasmine.createSpyObj('$location', ['path']),
       $translate: angular.identity,
       $routeParams: {gameId: 'shahar'},
-      Minefield: jasmine.createSpy('Minefield').andReturn({game: []}),
+      Minefield: jasmine.createSpy('Minefield').andCallFake(function () {
+        return {game: [[{$reveal: angular.noop}]]};
+      }),
       games: {get: function (gameId) {
         expect(gameId).toBe('shahar');
         return {$bind: function (scope, property) {
@@ -38,8 +40,17 @@ describe('Controller: MinesweeperCtrl', function () {
     gamePromise.resolve('loadedGame');
     scope.$digest();
     expect(Minefield).toHaveBeenCalledWith('loadedGame');
-    expect(scope.minefield.game.length).toBe(0);
+    expect(scope.minefield.game.length).toBe(1);
   }));
+
+  it('should restore minefield if overwritten', function () {
+    gamePromise.resolve('loadedGame');
+    scope.$digest();
+    scope.$apply(function () {
+      delete scope.minefield.game[0][0].$reveal;
+    });
+    expect(scope.minefield.game[0][0].$reveal).toBe(angular.noop);
+  });
 
   it('should navigate back to list on failure', inject(function ($location) {
     gamePromise.reject();
@@ -76,13 +87,13 @@ describe('Controller: MinesweeperCtrl', function () {
 
   it('should invoke game watcher before alert', inject(function (gameState, $window) {
     var secondlevelWatcher = jasmine.createSpy('secondlevelWatcher');
-    scope.$watch('minefield.game[0]', secondlevelWatcher);
+    scope.$watch('minefield.game[0][0].dummy', secondlevelWatcher);
     $window.alert.andCallFake(function () {
       expect(secondlevelWatcher).toHaveBeenCalled();
     });
     scope.$apply(function () {
       scope.restart();
-      scope.minefield.game.unshift('a');
+      scope.minefield.game[0][0].dummy = 'a';
       scope.minefield.state = gameState.LOST;
     });
     expect($window.alert).toHaveBeenCalled();
