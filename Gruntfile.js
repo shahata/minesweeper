@@ -16,4 +16,8 @@ module.exports = function (grunt) {
     unitTestFiles: unitTestFiles,
     protractor: true
   });
+
+  var yeoman = grunt.config('yeoman');
+  yeoman.api = 'http://localhost:3000/_api/';
+  grunt.config('yeoman', yeoman);
 };

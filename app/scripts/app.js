@@ -7,7 +7,7 @@ angular.module('minesweeperApp', [
   'minesweeperTranslations',
   'wixAngular',
   'ngRoute',
-  'firebase'
+  'ngResource'
 ]).config(function ($routeProvider) {
   $routeProvider
     .when('/', {

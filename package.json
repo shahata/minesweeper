@@ -1,7 +1,10 @@
 {
   "name": "minesweeper",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "body-parser": "^1.4.3",
+    "express": "^4.6.1"
+  },
   "devDependencies": {
     "wix-gruntfile": "~0.1.2"
   },

@@ -23,7 +23,8 @@
     "wix-angular": "~0.1.1",
     "lodash": "~2.4.1",
     "angular-route": "~1.2.20",
-    "angularfire": "~0.7.1"
+    "angularfire": "~0.7.1",
+    "angular-resource": "~1.2.20"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",
