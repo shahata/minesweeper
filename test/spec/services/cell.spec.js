@@ -76,4 +76,22 @@ describe('Service: Cell', function () {
     expect(revealSpy).not.toHaveBeenCalled();
   });
 
+  it('should display count of mines', function () {
+    var cell = aCell();
+    cell.count = 5;
+    expect(cell.$displayValue()).toBe(5);
+  });
+
+  it('should display * for mine', function () {
+    var cell = aCell();
+    cell.mine = true;
+    expect(cell.$displayValue()).toBe('*');
+  });
+
+  it('should display empty string if count is 0', function () {
+    var cell = aCell();
+    cell.count = 0;
+    expect(cell.$displayValue()).toBe('');
+  });
+
 });

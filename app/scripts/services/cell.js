@@ -24,6 +24,13 @@ angular.module('minesweeperAppInternal')
           if (!this.revealed) {
             this.flagged = !this.flagged;
           }
+        },
+        $displayValue: function () {
+          if (this.mine) {
+            return '*';
+          } else {
+            return this.count ? this.count : '';
+          }
         }
       };
     };
