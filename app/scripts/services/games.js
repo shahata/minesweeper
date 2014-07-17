@@ -1,21 +1,13 @@
 'use strict';
 
 angular.module('minesweeperAppInternal')
-  .service('games', function game($resource, $q) {
+  .service('games', function game($resource) {
     var GameResource = $resource('/_api/minesweeper/game/:gameId', {gameId: '@id'});
 
     this.list = function () {
       var list = GameResource.query();
       list.$add = function (game) {
-        var deferred = $q.defer();
-        (new GameResource(game)).$save(function (game) {
-          deferred.resolve({name: function () {
-            return game.id;
-          }});
-        }, function (response) {
-          deferred.reject(response);
-        });
-        return deferred.promise;
+        return (new GameResource(game)).$save();
       };
       return list;
     };

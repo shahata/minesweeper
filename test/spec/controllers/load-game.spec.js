@@ -12,9 +12,7 @@ describe('Controller: LoadGameCtrl', function () {
       },
       games: {list: function () {
         return {$add: function (obj) {
-          return $q.when({name: function () {
-            return JSON.stringify(obj);
-          }});
+          return $q.when({id: JSON.stringify(obj)});
         }};
       }}
     });
