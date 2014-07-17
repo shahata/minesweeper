@@ -1,26 +1,30 @@
 'use strict';
 
 describe('Service: games', function () {
-  var GameResource, $save, deferred;
+  var GameResource, deferredSave, deferredGet;
 
   beforeEach(function () {
-    GameResource = jasmine.createSpy('GameResource').andCallFake(function () {
-      this.$save = $save = jasmine.createSpy('$save');
-    });
-
-    GameResource.query = jasmine.createSpy('query').andReturn([]);
-    GameResource.get = jasmine.createSpy('get').andCallFake(function () {
-      inject(function ($q) {
-        deferred = $q.defer();
-      });
-      return {$promise: deferred.promise};
-    });
+    GameResource = jasmine.createSpy('GameResource');
 
     module('minesweeperAppInternal');
     module({
       $resource: function () {
         return GameResource;
       }
+    });
+
+    inject(function ($q) {
+      GameResource.andCallFake(function () {
+        this.$save = function () {
+          deferredSave = $q.defer();
+          return deferredSave.promise;
+        };
+      });
+      GameResource.query = jasmine.createSpy('query').andReturn([]);
+      GameResource.get = jasmine.createSpy('get').andCallFake(function () {
+        deferredGet = $q.defer();
+        return {$promise: deferredGet.promise};
+      });
     });
   });
 
@@ -35,19 +39,17 @@ describe('Service: games', function () {
   });
 
   it('should resolve promise after add success', inject(function ($rootScope) {
-    var spy = jasmine.createSpy().andCallFake(function (ref) {
-      expect(ref.name()).toBe(666);
-    });
+    var spy = jasmine.createSpy();
     games.list().$add({name: 'shahata'}).then(spy);
-    $save.calls[0].args[0]({id: 666});
+    deferredSave.resolve({id: 666});
     $rootScope.$digest();
-    expect(spy).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalledWith({id: 666});
   }));
 
   it('should reject promise after add failed', inject(function ($rootScope) {
     var spy = jasmine.createSpy();
     games.list().$add({name: 'shahata'}).catch(spy);
-    $save.calls[0].args[1]({error: 666});
+    deferredSave.reject({error: 666});
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith({error: 666});
   }));
@@ -61,7 +63,7 @@ describe('Service: games', function () {
     var game = {minefield: 666, $save: jasmine.createSpy('$save')};
     var spy = jasmine.createSpy();
     games.get(666).$bind($rootScope, 'shahata').then(spy);
-    deferred.resolve(game);
+    deferredGet.resolve(game);
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith(666);
     expect(game.$save).toHaveBeenCalled();
@@ -70,7 +72,7 @@ describe('Service: games', function () {
   it('should watch bound property', inject(function ($rootScope) {
     var game = {minefield: 666, $save: jasmine.createSpy('$save')};
     games.get(666).$bind($rootScope, 'shahata');
-    deferred.resolve(game);
+    deferredGet.resolve(game);
     $rootScope.$digest();
     game.$save.reset();
 
@@ -85,7 +87,7 @@ describe('Service: games', function () {
   it('should reject promise after bind failed', inject(function ($rootScope) {
     var spy = jasmine.createSpy();
     games.get(666).$bind($rootScope, 'shahata').catch(spy);
-    deferred.reject({error: 666});
+    deferredGet.reject({error: 666});
     $rootScope.$digest();
     expect(spy).toHaveBeenCalledWith({error: 666});
   }));

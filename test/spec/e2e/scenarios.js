@@ -64,11 +64,7 @@ describe('minesweeperApp', function () {
             return {
               shaharKey: {name: 'shahar'},
               $add: function (obj) {
-                return $q.when({
-                  name: function () {
-                    return obj.name + 'Key';
-                  }
-                });
+                return $q.when({id: obj.name + 'Key'});
               }
             };
           },

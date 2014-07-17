@@ -6,7 +6,7 @@ angular.module('minesweeperAppInternal')
 
     $scope.newGame = function (name) {
       $scope.games.$add({name: name, minefield: new Minefield(10, 10, 8)}).then(function (ref) {
-        $location.path('/' + ref.name());
+        $location.path('/' + ref.id);
       });
     };
   });
