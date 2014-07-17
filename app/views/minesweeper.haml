@@ -1,12 +1,12 @@
 %div
-  %a{:"relative-href" => "#/"} << Back
+  %a{:"relative-href" => "#/"} {{'BACK' | translate}}
   %form{:"ng-submit" => "restart()"}
     %input{:"ng-model" => "parameters.rows", :type => "number"}
     %input{:"ng-model" => "parameters.columns", :type => "number"}
     %input{:"ng-model" => "parameters.mines", :type => "number"}
-    %input{:type => "submit", :value => "Restart"}
+    %input{:type => "submit", :value => "{{'RESTART' | translate}}"}
   %table#minesweeper
     %tr{:"ng-repeat" => "row in minefield.game"}
       %td{:"ng-repeat" => "cell in row", :"ng-click" => "cell.$reveal()", :"ng-dblclick" => "cell.$autoReveal()", :"on-contextmenu" => "cell.$flag()", :"ng-class" => "{covered: !cell.revealed}"}
-        .cell-value{:"ng-show" => "cell.revealed"} {{cell.mine ? '*' : cell.count ? cell.count : ''}}
-        .cell-flag{:"ng-show" => "cell.flagged"} Flag
+        .cell-value{:"ng-show" => "cell.revealed"} {{cell.$displayValue()}}
+        .cell-flag{:"ng-show" => "cell.flagged"} {{'FLAG' | translate}}
