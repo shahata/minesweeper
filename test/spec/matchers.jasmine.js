@@ -7,6 +7,10 @@ beforeEach(function () {
       return angular.equals(this.actual, expected);
     },
 
+    toBeInstanceOf: function (expected) {
+      return this.actual instanceof expected;
+    },
+
     toHaveBeenCalledOnce: function () {
       if (arguments.length > 0) {
         throw new Error('toHaveBeenCalledOnce does not take arguments, use toHaveBeenCalledWith');

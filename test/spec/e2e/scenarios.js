@@ -6,7 +6,7 @@ describe('minesweeperApp', function () {
     var rows = element.all(by.css('#minesweeper tr'));
 
     this.load = function (gameId) {
-      browser.get('/#/' + (gameId || 'shahar'));
+      browser.get('/#/' + (gameId || '0'));
     };
 
     this.back = function () {
@@ -57,37 +57,6 @@ describe('minesweeperApp', function () {
 
   beforeEach(function () {
     browser.addMockModule('minesweeperAppMocks', function () {});
-    browser.addMockModule('firebaseMock', function () {
-      angular.module('firebaseMock', []).factory('games', function ($q, Minefield) {
-        return {
-          list: function () {
-            return {
-              shaharKey: {name: 'shahar'},
-              $add: function (obj) {
-                return $q.when({id: obj.name + 'Key'});
-              }
-            };
-          },
-          get: function (gameId) {
-            return {
-              $bind: function (scope, property) {
-                scope[property] = new Minefield(10, 10, 8);
-                scope[property].game.forEach(function (row) {
-                  row.forEach(function (cell) {
-                    for (var x in cell) {
-                      if (x[0] === '$') {
-                        delete cell[x];
-                      }
-                    }
-                  });
-                });
-                return (gameId === 'fail' ? $q.reject() : $q.when());
-              }
-            };
-          }
-        };
-      });
-    });
     browser.addMockModule('randomMock', function () {
       var randomIndex = 0;
       var randomArr = [4, 1, 4, 2, 4, 3, 4, 4, 4, 5, 4, 6, 4, 7, 4, 8];
@@ -116,14 +85,14 @@ describe('minesweeperApp', function () {
       var games = new MinesweeperGames();
       games.load();
       games.getLinks().get(0).click();
-      expect(browser.getLocationAbsUrl()).toMatch(/#\/shaharKey$/);
+      expect(browser.getLocationAbsUrl()).toMatch(/#\/0/);
     });
 
     it('should route to game if new game created', function () {
       var games = new MinesweeperGames();
       games.load();
       games.newGame('test');
-      expect(browser.getLocationAbsUrl()).toMatch(/#\/testKey$/);
+      expect(browser.getLocationAbsUrl()).toMatch(/#\/1/);
     });
   });
 
@@ -229,9 +198,8 @@ describe('minesweeperApp', function () {
     it('should flag cell when it is right clicked', function () {
       var table = new MinesweeperTable();
       table.load();
-      browser.executeScript(function () {
-        angular.element('td').eq(0).triggerHandler('contextmenu');
-      });
+      browser.actions().mouseMove(table.getCell(0, 0)).perform();
+      browser.actions().click(protractor.Button.RIGHT).perform();
       expect(table.getCell(0, 0).getText()).toBe('Flag');
     });
   });

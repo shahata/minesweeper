@@ -8,7 +8,7 @@ angular.module('minesweeperAppInternal')
   })
   .factory('Minefield', function Minefield(minePlanter, gameState, Cell) {
     return function (rows, columns, mines) {
-      var game, remainingCells, self = this;
+      var game, self = this;
 
       function getNeighbors(coord) {
         var neighbors = [];
@@ -34,11 +34,15 @@ angular.module('minesweeperAppInternal')
         return neighbors;
       }
 
+      function allCells() {
+        return game.reduce(function (all, row) {
+          return all.concat(row);
+        }, []);
+      }
+
       function revealAll() {
-        game.forEach(function (row) {
-          row.forEach(function (cell) {
-            cell.revealed = true;
-          });
+        allCells().forEach(function (cell) {
+          cell.revealed = true;
         });
       }
 
@@ -56,6 +60,11 @@ angular.module('minesweeperAppInternal')
       }
 
       function onCellRevealed(cell, auto) {
+        if (cell.mine) {
+          gameOver(gameState.LOST);
+          return;
+        }
+
         if (auto) {
           var neighbors = getNeighbors(cell.coord);
           if (neighbors.filter(function (neighbor) {
@@ -65,14 +74,17 @@ angular.module('minesweeperAppInternal')
               neighbor.$reveal();
             });
           }
-        } else if (cell.mine) {
-          gameOver(gameState.LOST);
-        } else if (--remainingCells === 0) {
-          gameOver(gameState.WON);
         } else if (cell.count === 0) {
           getNeighbors(cell.coord).forEach(function (neighbor) {
             neighbor.$reveal();
           });
+        }
+
+        var won = allCells(game).every(function (cell) {
+          return cell.revealed || cell.mine;
+        });
+        if (won) {
+          gameOver(gameState.WON);
         }
       }
 
@@ -102,11 +114,6 @@ angular.module('minesweeperAppInternal')
         plantMines();
       }
 
-      remainingCells = game.reduce(function (count, row) {
-        return count + row.filter(function (cell) {
-          return !cell.revealed && !cell.mine;
-        }).length;
-      }, 0);
       this.game = game;
       this.state = gameState.PLAYING;
     };

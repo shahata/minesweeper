@@ -11,7 +11,7 @@ describe('Controller: MinesweeperCtrl', function () {
       $translate: angular.identity,
       $routeParams: {gameId: 'shahar'},
       Minefield: jasmine.createSpy('Minefield').andCallFake(function () {
-        return {game: [[{$reveal: angular.noop}]]};
+        this.game = [[{}]];
       }),
       games: {get: function (gameId) {
         expect(gameId).toBe('shahar');
@@ -40,17 +40,8 @@ describe('Controller: MinesweeperCtrl', function () {
     gamePromise.resolve('loadedGame');
     scope.$digest();
     expect(Minefield).toHaveBeenCalledWith('loadedGame');
-    expect(scope.minefield.game.length).toBe(1);
+    expect(scope.minefield).toBeInstanceOf(Minefield);
   }));
-
-  it('should restore minefield if overwritten', function () {
-    gamePromise.resolve('loadedGame');
-    scope.$digest();
-    scope.$apply(function () {
-      delete scope.minefield.game[0][0].$reveal;
-    });
-    expect(scope.minefield.game[0][0].$reveal).toBe(angular.noop);
-  });
 
   it('should navigate back to list on failure', inject(function ($location) {
     gamePromise.reject();

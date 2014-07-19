@@ -6,12 +6,6 @@ describe('Factory: Minefield', function () {
     module({minePlanter: jasmine.createSpy('minePlanter')});
   });
 
-  function forEachCell(game, fn) {
-    game.forEach(function (row) {
-      row.forEach(fn);
-    });
-  }
-
   function aMinefield(options) {
     var minefield;
     inject(function (Minefield, minePlanter) {
@@ -27,6 +21,12 @@ describe('Factory: Minefield', function () {
 
   function aGame(options) {
     return aMinefield(options).game;
+  }
+
+  function allCells(game) {
+    return game.reduce(function (all, row) {
+      return all.concat(row);
+    }, []);
   }
 
   it('should load a previously serialized game', inject(function (Minefield) {
@@ -57,7 +57,7 @@ describe('Factory: Minefield', function () {
   it('should mark the number of mines on the mine neighbors', function () {
     var game = aGame({rows: 3, columns: 3, mines: [{row: 1, column: 1}]});
     var expectedMine = {row: 1, column: 1};
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       if (!angular.equals(expectedMine, cell.coord)) {
         expect(cell.count).toBe(1);
       }
@@ -85,7 +85,7 @@ describe('Factory: Minefield', function () {
   it('should win if only mines are still not revealed', inject(function (gameState) {
     var minefield = aMinefield({mines: [{row: 0, column: 0}]});
     expect(minefield.state).toBe(gameState.PLAYING);
-    forEachCell(minefield.game, function (cell) {
+    allCells(minefield.game).forEach(function (cell) {
       if (!cell.mine) {
         cell.$reveal();
       }
@@ -97,7 +97,7 @@ describe('Factory: Minefield', function () {
     var game = aGame({rows: 4, columns: 1, mines: [{row: 2, column: 0}]});
     game[0][0].$reveal();
 
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       expect(cell.revealed).toBe(cell.coord.row < 2);
     });
   });
@@ -106,7 +106,7 @@ describe('Factory: Minefield', function () {
     var game = aGame({mines: [{row: 0, column: 0}]});
     game[0][2].$reveal();
 
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       expect(cell.revealed).toBe(true);
     });
   });
@@ -115,7 +115,7 @@ describe('Factory: Minefield', function () {
     var game = aGame({mines: [{row: 0, column: 0}]});
     game[0][0].$reveal();
 
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       expect(cell.revealed).toBe(true);
     });
   });
@@ -126,7 +126,7 @@ describe('Factory: Minefield', function () {
     game[1][1].$reveal();
     game[1][1].$autoReveal();
 
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       expect(cell.revealed).toBe(true);
     });
   });
@@ -136,7 +136,7 @@ describe('Factory: Minefield', function () {
     game[1][1].$reveal();
     game[1][1].$autoReveal();
 
-    forEachCell(game, function (cell) {
+    allCells(game).forEach(function (cell) {
       expect(cell.revealed).toBe(angular.equals(cell.coord, {row: 1, column: 1}));
     });
   });
