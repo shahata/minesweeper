@@ -1,0 +1,34 @@
+<!doctype html>
+<html ng-app="minesweeperApp">
+  <head>
+    <title>minesweeper</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <div ng-controller="MinesweeperCtrl">
+      <form ng-submit="restart()">
+        <input ng-model="parameters.rows" type="number">
+        <input ng-model="parameters.columns" type="number">
+        <input ng-model="parameters.mines" type="number">
+        <input type="submit" value="Restart">
+      </form>
+      <table id="minesweeper">
+        <tr ng-repeat="row in minefield.game">
+          <td ng-repeat="cell in row" ng-click="cell.$reveal()" ng-dblclick="cell.$autoReveal()"
+            on-contextmenu="cell.$flag()" ng-class="{covered: !cell.revealed}">
+            <div class="cell-value" ng-show="cell.revealed">{{cell.$displayValue()}}</div>
+            <div class="cell-flag" ng-show="cell.flagged">Flag</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/services/minefield.js"></script>
+    <script src="scripts/controllers/minesweeper.js"></script>
+    <script src="scripts/directives/on-contextmenu.js"></script>
+    <script src="scripts/services/mine-planter.js"></script>
+    <script src="scripts/services/cell.js"></script>
+  </body>
+</html>
